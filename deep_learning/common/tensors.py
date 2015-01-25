@@ -14,17 +14,18 @@ def create_theano_tensor(name, dims, out_type):
 
 
 def create_shared_variable(name, shape, generator, **kwargs):
-    if generator == 'random':
-        return theano.shared(value=np.random.random(shape), name=name)
+
+    ulimit = 1
+    llimit = -1
 
     if generator == 'tanh':
-        # generat random numbers in the linear activation region for neurons
+        # generate random numbers in the linear activation region for neurons
         ulimit = 4*sqrt(6.0/np.sum(shape))
         llimit = -ulimit
-        value = llimit + np.random.random(shape) * (ulimit - llimit)
-        return theano.shared(value=value, name=name)
 
-    if generator == 'zero':
-        return theano.shared(value=np.zeros(shape), name=name)
+    if type(generator) == int or type(generator) == float:
+        return theano.shared(value=generator*np.ones(shape).astype(np.float32), name=name)
 
-    return None
+    value = llimit + np.random.random(shape) * (ulimit - llimit)
+    return theano.shared(value=value.astype(np.float32), name=name)
+

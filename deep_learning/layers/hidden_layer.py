@@ -8,12 +8,10 @@ class HiddenLayer(BaseLayer):
 
     def __init__(self, name, n_in, n_out, activation=None):
         self.w = create_shared_variable(name + "_w", (n_in, n_out), 'tanh')
-        self.b = create_shared_variable(name + "_b", n_out, 'tanh')
+        self.b = create_shared_variable(name + "_b", n_out, 0)
         self.params = [self.w,  self.b]
         self.activation = activation
-        super(HiddenLayer, self).__init__(name,
-                                           np.asarray([n_in]),
-                                           np.asarray([n_out]), truth_type=float)
+        super(HiddenLayer, self).__init__(name)
 
     def transform(self, x):
         xw = T.dot(x, self.w) + self.b

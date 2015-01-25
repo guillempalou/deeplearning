@@ -1,17 +1,17 @@
 import numpy as np
 import theano
 import theano.tensor as T
+from theano.tensor.nnet import categorical_crossentropy
 from deep_learning.common.functions import l2_sqnorm
 from deep_learning.common.functions import l1_norm
 from deep_learning.common.tensors import create_theano_tensor
 from deep_learning.layers.softmax import SoftMaxLayer
 from deep_learning.nets.base_net import BaseNet
 
-theano.config.exception_verbosity = 'high'
+theano.config.optimizer = 'None'
 
 
 class Logistic(BaseNet):
-
     def __init__(self, name, n_in, n_out, learning_rate=0.001, l1=0, l2=0):
         self.name = name
         self.output_layer = SoftMaxLayer(name + "_output", n_in, n_out)
@@ -27,14 +27,14 @@ class Logistic(BaseNet):
         self.train_function = None
 
         # define inputs and outputs based on the layers
-        self.X = self.output_layer.X
-        self.Y = self.output_layer.Y
-        self.Xt = create_theano_tensor(name + "_X_test", 2, self.output_layer.type_in)
+        self.X = create_theano_tensor('logistic_gt', 2, float)
+        self.Y = create_theano_tensor('logistic_gt', 1, int)
+
         self.cost = self.cost_function(self.X, self.Y)
 
         # generate the prediction function
-        self.predict = theano.function(inputs=[self.Xt],
-                                       outputs=self.transform(self.Xt),
+        self.predict = theano.function(inputs=[self.X],
+                                       outputs=self.transform(self.X),
                                        allow_input_downcast=True)
 
         # call the base class
@@ -52,18 +52,12 @@ class Logistic(BaseNet):
 
     def cost_function(self, x, y):
         # TODO add more costs functions
-        nlog = -T.mean(T.log(self.transform(x)[:, y]))
+        nlog = -T.sum(T.log((self.transform(x))[T.arange(y.shape[0]), y]))
         return nlog + \
                self.l1 * l1_norm(self.params) + \
                self.l2 * l2_sqnorm(self.params)
 
 
-    def begin_training(self):
-        updates = self.update_parameters()
-        self.train_function = theano.function(inputs=[self.X, self.Y],
-                                              outputs=self.cost, updates=updates,
-                                              allow_input_downcast=True)
-
-    def train(self, x, y):
+    def train(self, x=None, y=None, index=0):
         self.train_function(x, y)
 

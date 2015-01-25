@@ -11,11 +11,10 @@ class SoftMaxLayer(BaseLayer):
 
     def __init__(self, name, n_in, n_out):
         self.w = create_shared_variable(name + "_w", (n_in, n_out), 'random')
-        self.b = create_shared_variable(name + "_b", n_out, 'random')
+        self.b = create_shared_variable(name + "_b", n_out, 0)
         self.params = [self.w,  self.b]
-        super(SoftMaxLayer, self).__init__(name,
-                                           np.asarray([n_in]),
-                                           np.asarray([n_out]), truth_type=int)
+
+        super(SoftMaxLayer, self).__init__(name)
 
     def transform(self, x):
         return T.nnet.softmax(T.dot(x, self.w) + self.b)

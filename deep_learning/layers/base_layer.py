@@ -8,24 +8,8 @@ from deep_learning.common.tensors import create_theano_tensor
 class BaseLayer(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, name, n_in, n_out, in_type=float, truth_type=float):
+    def __init__(self, name):
         self.name = name
-
-        # take into account the minibatch
-        self.X = create_theano_tensor(name + "_X", n_in.ndim + 1, in_type)
-        self.Y = create_theano_tensor(name + "_Y", n_out.ndim, truth_type)
-        self.n_in = n_in
-        self.n_out = n_out
-        self.type_in = in_type
-        self.type_truth = truth_type
-
-        # define the params on the sublayers
-
-        # define the function to predict
-        X_predict = create_theano_tensor(name + "X_test", n_in.ndim + 1, in_type)
-        self.predict = theano.function(inputs=[X_predict],
-                                       outputs=self.transform(X_predict),
-                                       allow_input_downcast=True)
 
     @abc.abstractmethod
     def transform(self, x):
