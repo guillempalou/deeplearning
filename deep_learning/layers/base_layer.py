@@ -15,17 +15,6 @@ class BaseLayer(object):
     def transform(self, x):
         return "No method defined"
 
-    @abc.abstractmethod
-    def get_parameters(self):
-        return self.params
-
-    @abc.abstractmethod
-    def get_weights(self):
-        return self.w.get_value()
-
-    @abc.abstractmethod
-    def get_bias(self):
-        return self.b.get_value()
 
     def l1_norm(self):
         c = 0
