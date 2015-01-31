@@ -16,12 +16,19 @@ def create_theano_tensor(name, dims, out_type):
 def create_shared_variable(name, shape, generator, **kwargs):
 
     ulimit = 1
-    llimit = -1
 
     if generator == 'tanh':
+        fan_in = kwargs['fan_in']
+        fan_out = kwargs['fan_out']
         # generate random numbers in the linear activation region for neurons
-        ulimit = 4*sqrt(6.0/np.sum(shape))
-        llimit = -ulimit
+        ulimit = sqrt(6.0/np.sum(fan_in + fan_out))
+
+    if generator == 'softmax' or generator == 'logistic':
+        fan_in = kwargs['fan_in']
+        fan_out = kwargs['fan_out']
+        ulimit = 4*sqrt(6.0/np.sum(fan_in + fan_out))
+
+    llimit = -ulimit
 
     if type(generator) == int or type(generator) == float:
         return theano.shared(value=generator*np.ones(shape).astype(np.float32), name=name)

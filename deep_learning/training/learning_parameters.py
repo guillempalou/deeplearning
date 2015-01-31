@@ -1,7 +1,9 @@
 from collections import namedtuple
 
 
-class DescentParameters(namedtuple('DescentParameters', ['epochs',
+class DescentParameters(namedtuple('DescentParameters', ['train_loss',
+                                                         'test_loss',
+                                                         'epochs',
                                                          'minibatch',
                                                          'learning_rate',
                                                          'momentum',
@@ -15,9 +17,17 @@ class DescentParameters(namedtuple('DescentParameters', ['epochs',
     Wrapper on namedtuple so we can provide default values to the parameters
     """
 
-    def __new__(cls, epochs=100, minibatch=10, learning_rate=0.001, momentum=0., l1=0.001, l2=0.001, decay=0.,
+    def __new__(cls, train_loss='crossentropy', test_loss=None,
+                epochs=100, minibatch=10, learning_rate=0.001, momentum=0.,
+                l1=0.001, l2=0.001, decay=0.,
                 tolerance=1e-4, tries=3):
-        return super(DescentParameters, cls).__new__(cls, epochs, minibatch, learning_rate, momentum, l1, l2, decay,
+
+        if test_loss == None:
+            test_loss = train_loss
+
+        return super(DescentParameters, cls).__new__(cls, train_loss, test_loss,
+                                                     epochs, minibatch, learning_rate, momentum,
+                                                     l1, l2, decay,
                                                      tolerance, tries)
 
 

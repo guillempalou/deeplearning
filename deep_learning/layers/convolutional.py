@@ -9,7 +9,21 @@ from deep_learning.layers.base_layer import BaseLayer
 
 
 class ConvolutionalLayer(BaseLayer):
+
     logger = logging.getLogger("ConvolutionalLayer")
+
+    def definition(self):
+        return {
+            'name': self.name,
+            'type': 'convolutional',
+            'input_shape': list(self.input_shape),
+            'filters': self.filters,
+            'output_shape': list(self.output_shape),
+            'activation': self.activation,
+            'pool': self.pool,
+            'stride': self.stride
+        }
+
 
     def __init__(self, name, input, filters,
                  stride=(1, 1), pool=(1, 1), activation='relu'):
@@ -19,15 +33,16 @@ class ConvolutionalLayer(BaseLayer):
 
             :param name: name of the layer
             :param input: 3D tensor (input maps, image rows, image cols)
-            :param filters: 3D tensor (output maps, input maps, kernel rows, kernel cols)
+            :param filters: 3D tensor (output maps, kernel rows, kernel cols)
             :param stride: 2D matrix of filter subsampling
             :param activation: type of activation
             :return:
             """
         self.logger.debug("Creating hidden layer {0}".format(name))
 
-        self.input_shape = input
-        self.filter_shape = np.asarray((filters[0], input[0], filters[1], filters[2]))
+        self.input_shape = np.array(input)
+        self.filters = filters
+        self.filter_shape = np.array((filters[0], input[0], filters[1], filters[2]))
         self.pool = pool
         self.activation = activation
         self.stride = stride
@@ -35,14 +50,17 @@ class ConvolutionalLayer(BaseLayer):
         out_rows = (self.input_shape[1] - self.filter_shape[2] + 1)
         out_cols = (self.input_shape[2] - self.filter_shape[3] + 1)
 
-        valid_rows = int(np.floor(np.ceil(out_rows*1.0 / self.stride[0]) / self.pool[0]))
-        valid_cols = int(np.floor(np.ceil(out_cols*1.0 / self.stride[1]) / self.pool[1]))
+        valid_rows = int(np.floor(np.ceil(out_rows * 1.0 / self.stride[0]) / self.pool[0]))
+        valid_cols = int(np.floor(np.ceil(out_cols * 1.0 / self.stride[1]) / self.pool[1]))
 
-        self.output_shape = np.asarray((self.filter_shape[0],
-                                        valid_rows,
-                                        valid_cols))
+        self.output_shape = np.array((self.filter_shape[0],
+                                      valid_rows,
+                                      valid_cols))
 
-        self.w = create_shared_variable(name + "_w", self.filter_shape, self.activation)
+        fin = 0 if activation != 'tanh' else input[0] * filters[1] * filters[2]
+        fout = 0 if activation != 'tanh' else np.prod(filters) // np.prod(pool)
+
+        self.w = create_shared_variable(name + "_w", self.filter_shape, self.activation, fan_in=fin, fan_out=fout)
         self.b = create_shared_variable(name + "_b", self.filter_shape[0], 0)
         self.params = [self.w, self.b]
 

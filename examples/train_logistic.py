@@ -12,7 +12,7 @@ logger = logging.getLogger("GENERAL")
 sys.path.extend(['/Users/guillem/developer/kaggle/deep_learning'])
 
 from deep_learning.nets.logistic import Logistic
-from deep_learning.training.gradient_descent import gradient_descent
+from deep_learning.training.gradient_descent_gpu import gradient_descent
 from deep_learning.training.learning_parameters import DescentParameters, ValidationParameters
 
 N = 1000

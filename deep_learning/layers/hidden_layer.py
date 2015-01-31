@@ -9,6 +9,15 @@ class HiddenLayer(BaseLayer):
 
     logger = logging.getLogger("HiddenLayer")
 
+    def definition(self):
+        return {
+            'name': self.name,
+            'type': 'hidden',
+            'input_shape': self.input_shape,
+            'output_shape': self.output_shape,
+            'activation': self.activation,
+        }
+
     def __init__(self, name, n_in, n_out, activation=None):
         self.logger.debug("Creating hidden layer {0}".format(name))
 
@@ -16,7 +25,10 @@ class HiddenLayer(BaseLayer):
 
         self.logger.debug("Activation {0} - {1} inputs and {2} outputs".format(self.activation, n_in, n_out))
 
-        self.w = create_shared_variable(name + "_w", (n_in, n_out), activation)
+        fin = 0 if activation != 'tanh' else n_in
+        fout = 0 if activation != 'tanh' else n_out
+
+        self.w = create_shared_variable(name + "_w", (n_in, n_out), activation, fan_in=fin, fan_out=fout)
         self.b = create_shared_variable(name + "_b", n_out, 0)
         self.params = [self.w,  self.b]
 

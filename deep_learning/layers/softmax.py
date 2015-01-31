@@ -12,11 +12,19 @@ class SoftMaxLayer(BaseLayer):
 
     logger = logging.getLogger("SoftMaxLayer")
 
+    def definition(self):
+        return {
+            'name': self.name,
+            'type': 'softmax',
+            'input_shape': self.input_shape,
+            'output_shape': self.output_shape,
+        }
+
     def __init__(self, name, n_in, n_out):
         self.logger.debug("Creating softmax {0}".format(name))
         self.logger.debug("Layer with {0} inputs and {1} outputs".format(n_in, n_out))
 
-        self.w = create_shared_variable(name + "_w", (n_in, n_out), 'random')
+        self.w = create_shared_variable(name + "_w", (n_in, n_out), 'softmax', fan_in=n_in, fan_out=n_out)
         self.b = create_shared_variable(name + "_b", n_out, 0)
         self.params = [self.w,  self.b]
 

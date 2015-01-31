@@ -16,10 +16,11 @@ class DeepNet(BaseNet):
         self.logger.debug("Creating nnet {0} with {1} layers".format(name, len(layers)))
         self.layers = []
         self.params = []
-        self.N = len(layers)
+        self.N = 0
         for layer in layers:
-            self.params += layer.params
             self.layers.append(layer)
+            self.params += self.layers[self.N].params
+            self.N += 1
 
         # define inputs and outputs based on the layers
         # TODO modify the input and output dimensions for different types of nets

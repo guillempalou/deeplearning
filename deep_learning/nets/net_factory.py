@@ -10,11 +10,13 @@ from deep_learning.nets.deep import DeepNet
 logger = logging.getLogger("NET_FACTORY")
 
 
-def create_net(name, file_path):
+def create_net_from_file(name, file_path):
     input_file = open(file_path)
     definition = yaml.load(input_file)
     input_file.close()
+    return create_net_from_dict(name, definition)
 
+def create_net_from_dict(name, definition):
     previous_output = None
     layers = []
     for layer_def in definition:

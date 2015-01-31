@@ -15,6 +15,9 @@ class BaseLayer(object):
     def transform(self, x):
         return "No method defined"
 
+    @abc.abstractmethod
+    def definition(self):
+        return "No method defined"
 
     def l1_norm(self):
         c = 0
@@ -27,4 +30,7 @@ class BaseLayer(object):
         for p in self.params:
             sq += T.sum(T.square(p))
         return sq
+
+    def __str__(self):
+        return self.definition()
 

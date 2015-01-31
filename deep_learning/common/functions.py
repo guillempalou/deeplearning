@@ -12,7 +12,7 @@ def l1_norm(params):
 def l2_sqnorm(params):
     sq = 0
     for p in params:
-        sq += T.sum(T.square(p))
+        sq += T.sum(p**2)
     return sq
 
 
