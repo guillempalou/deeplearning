@@ -1,5 +1,5 @@
 import logging
-
+from deep_learning.io.net_io import save_net
 
 
 class GradientDescent:
@@ -36,15 +36,17 @@ class GradientDescent:
 
         train_cost = 0
         val_cost = 0
-        minibatch = self.learning_parameters.minibatch
+        minibatch = self.learning_parameters.minibatch*self.learning_parameters.augmented
 
+        self.n_batches = x.shape[0] // minibatch
 
         for batch in range(self.n_batches):
+            self.logger.debug("Doing batch {0} / {1}".format(batch+1, self.n_batches))
             if x is None and y is None:
                 tcost, vcost = model.train(index=batch)
             else:
                 start = batch * minibatch
-                end = min(x.shape[0] - 1, (batch + 1) * minibatch)
+                end = min(x.shape[0], (batch + 1) * minibatch)
                 xbatch, ybatch = x[start:end], y[start:end]
                 tcost, vcost = model.train(xbatch, ybatch)
 
@@ -57,9 +59,9 @@ class GradientDescent:
 
         return train_cost, val_cost
 
-    def train(self, model, data_in_gpu=True, x_train=None, y_train=None, x_val=None, y_val=None):
+    def train(self, model, data_in_gpu, augmentation, save_file=None, x_train=None, y_train=None, x_val=None, y_val=None):
 
-        self.n_batches = x_train.shape[0] // self.learning_parameters.minibatch
+
         self.logger.info("There are a total of {0} batches per epoch".format(self.n_batches))
 
         do_cross_val = self.validation_parameters is not None and x_val is not None and y_val is not None
@@ -80,21 +82,26 @@ class GradientDescent:
 
         self.logger.info("Beginning epochs")
         for epoch in range(self.learning_parameters.epochs):
+            self.logger.info("Training on Epoch {0}".format(epoch+1))
 
-            train_cost, val_cost = self.do_epoch(model, x_train, y_train)
+            x_augmented, y_augmented = augmentation.augment(x_train, y_train)
+
+            train_cost, val_cost = self.do_epoch(model, x_augmented, y_augmented)
+            self.logger.info("Mean train error {0}".format(val_cost))
 
             if do_cross_val:
-                current_cost = model.test(x=x_val, y=y_val)
+                x_val_augmented, y_val_augmented = augmentation.augment(x_val, y_val)
+                current_cost = self.validate(model, x=x_val_augmented, y=y_val_augmented)
                 if current_cost < self.best_cost:
                     self.best_cost = current_cost
                     self.best_params = model.get_parameters_values()
+                    if save_file is not None:
+                        save_net(save_file, model, self.best_params)
 
                 rel_improvement = (cost - current_cost) / cost
                 cost = current_cost
 
-                self.logger.info("Epoch {0} - {1} mean train error and {2} mean test error".format(epoch,
-                                                                                                   val_cost,
-                                                                                                   current_cost))
+                self.logger.info("Mean test error {0}".format(current_cost))
                 self.logger.debug("Best cost to the moment: {0}".format(self.best_cost))
 
                 if rel_improvement < self.learning_parameters.tolerance:
@@ -117,6 +124,15 @@ class GradientDescent:
         if x is None and y is None:
             return model.test(index=index)
         else:
-            return model.test(x=x, y=y)
+            n = x.shape[0]
+            minibatch = self.learning_parameters.minibatch*self.learning_parameters.augmented
+            n_batches = n // minibatch
+            tcost = 0
+            for batch in range(n_batches):
+                start = batch * minibatch
+                end = min(x.shape[0], (batch + 1) * minibatch)
+                xbatch, ybatch = x[start:end], y[start:end]
+                tcost += model.test(xbatch, ybatch)
+            return tcost / n_batches
 
 

@@ -17,6 +17,8 @@ class DeepNet(BaseNet):
         self.layers = []
         self.params = []
         self.N = 0
+        self.input_shape = None
+        self.output_shape = None
         for layer in layers:
             self.layers.append(layer)
             self.params += self.layers[self.N].params
@@ -27,16 +29,20 @@ class DeepNet(BaseNet):
         self.X = create_theano_tensor(name + "_X", 4, float)
         self.Y = create_theano_tensor(name + "_Y", 1, int)
 
+        self.input_shape = layers[0].input_shape
+        self.output_shape = layers[self.N-1].output_shape
+
+
         super(DeepNet, self).__init__(name)
 
-    def transform(self, x):
+    def transform(self, x, mode='train'):
         input = x
         output = None
         for layer in self.layers:
             if type(layer) != ConvolutionalLayer:
                 input = input.flatten(2)
 
-            output = layer.transform(input)
+            output = layer.transform(input, mode)
             input = output
 
         return output

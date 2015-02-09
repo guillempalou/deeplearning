@@ -5,6 +5,7 @@ class DescentParameters(namedtuple('DescentParameters', ['train_loss',
                                                          'test_loss',
                                                          'epochs',
                                                          'minibatch',
+                                                         'augmented',
                                                          'learning_rate',
                                                          'momentum',
                                                          'l1',
@@ -18,15 +19,15 @@ class DescentParameters(namedtuple('DescentParameters', ['train_loss',
     """
 
     def __new__(cls, train_loss='crossentropy', test_loss=None,
-                epochs=100, minibatch=10, learning_rate=0.001, momentum=0.,
+                epochs=100, minibatch=10, augmented=1, learning_rate=0.001, momentum=0.,
                 l1=0.001, l2=0.001, decay=0.,
-                tolerance=1e-4, tries=3):
+                tolerance=1e-4, tries=5):
 
         if test_loss == None:
             test_loss = train_loss
 
         return super(DescentParameters, cls).__new__(cls, train_loss, test_loss,
-                                                     epochs, minibatch, learning_rate, momentum,
+                                                     epochs, minibatch, augmented, learning_rate, momentum,
                                                      l1, l2, decay,
                                                      tolerance, tries)
 

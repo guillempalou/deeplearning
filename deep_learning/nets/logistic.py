@@ -19,7 +19,7 @@ class Logistic(BaseNet):
         # call the base class
         super(Logistic, self).__init__(name)
 
-    def transform(self, x):
-        return self.output_layer.transform(x)
+    def transform(self, x, mode):
+        return self.output_layer.transform(x, mode)
 
 

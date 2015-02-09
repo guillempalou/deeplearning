@@ -10,7 +10,8 @@ class MLP(BaseNet):
 
         self.name = name
 
-        self.hidden_layer = HiddenLayer(name + "_hidden", n_in, n_hidden, activation='tanh')
+        self.hidden_layer = HiddenLayer(name + "_hidden", n_in, n_hidden, activation='tanh', init_weights=null,
+                                        init_bias=null, dropout=0)
         self.output_layer = SoftMaxLayer(name + "_output", n_hidden, n_out)
 
         self.layers = [self.hidden_layer, self.output_layer]
@@ -23,9 +24,9 @@ class MLP(BaseNet):
         super(MLP, self).__init__(name)
 
 
-    def transform(self, x):
-        output_hidden = self.hidden_layer.transform(x)
-        output = self.output_layer.transform(output_hidden)
+    def transform(self, x, mode):
+        output_hidden = self.hidden_layer.transform(x, mode)
+        output = self.output_layer.transform(output_hidden, mode)
         return output
 
 

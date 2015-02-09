@@ -16,36 +16,42 @@ class HiddenLayer(BaseLayer):
             'input_shape': self.input_shape,
             'output_shape': self.output_shape,
             'activation': self.activation,
+            'dropout': self.dropout
         }
 
-    def __init__(self, name, n_in, n_out, activation=None):
+    def __init__(self, name, n_in, n_out, activation, init_weights, init_bias, dropout):
         self.logger.debug("Creating hidden layer {0}".format(name))
 
         self.activation = activation if activation is not None else 'tanh'
 
-        self.logger.debug("Activation {0} - {1} inputs and {2} outputs".format(self.activation, n_in, n_out))
+        self.init_weights = self.activation if init_weights is None else init_weights
+        self.init_bias = 0 if init_bias is None else init_bias
 
-        fin = 0 if activation != 'tanh' else n_in
-        fout = 0 if activation != 'tanh' else n_out
-
-        self.w = create_shared_variable(name + "_w", (n_in, n_out), activation, fan_in=fin, fan_out=fout)
-        self.b = create_shared_variable(name + "_b", n_out, 0)
+        self.w = create_shared_variable(name + "_w", (n_in, n_out), self.init_weights)
+        self.b = create_shared_variable(name + "_b", n_out, self.init_bias)
         self.params = [self.w,  self.b]
 
         self.input_shape = n_in
         self.output_shape = n_out
+        self.dropout = dropout
+
+        self.logger.debug("Activation {0} - {1} inputs and {2} outputs".format(self.activation, n_in, n_out))
+        self.logger.debug("Dropout probability {0}".format(self.dropout))
 
         super(HiddenLayer, self).__init__(name)
 
-    def transform(self, x):
+    def transform(self, x, mode='train'):
         xw = T.dot(x, self.w) + self.b
         if self.activation == 'tanh':
-            return T.tanh(xw)
+            xw = T.tanh(xw)
 
         if self.activation == 'relu':
-            return T.maximum(xw, 0)
+            xw *= xw > 0.
 
-        return xw
+        if mode == 'test':
+            return xw
+
+        return self.drop_output(xw/(1-self.dropout))
 
     def get_bias(self):
         return self.b.get_value()

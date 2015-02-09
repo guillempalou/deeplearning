@@ -26,14 +26,9 @@ for ch in range(3):
 pool = np.asarray((1, 1))
 X = create_theano_tensor("conv_test", 4, float)
 
-layer = ConvolutionalLayer("test",
-                           input=input_shape,
-                           filters=filters,
-                           pool=pool,
-                           stride=(7, 11),
-                           activation='relu')
+layer = ConvolutionalLayer("test", input=input_shape, filters=filters, stride=(7, 11), pool=pool, activation='relu')
 
-f = theano.function([X], layer.transform(X, minibatch=1))
+f = theano.function([X], layer.transform(X))
 
 output = f(batch)
 

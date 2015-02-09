@@ -21,8 +21,6 @@ def load_net(filename):
     f = open(filename, "rb")
     name = pickle.load(f)
     definition = pickle.load(f)
-    definition[0]['filters'] = [20, 5, 5]
-    definition[1]['filters'] = [50, 5, 5]
     nnet = create_net_from_dict(name, definition)
     for param in nnet.params:
         v = pickle.load(f)

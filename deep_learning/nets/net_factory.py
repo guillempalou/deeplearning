@@ -41,6 +41,9 @@ def create_layer(previous_output, layer_definition):
     layer_type = layer_definition['type']
     input_shape = previous_output if previous_output is not None else layer_definition['input_shape']
     activation = 'tanh' if 'activation' not in layer_definition else layer_definition['activation']
+    dropout = 0 if 'dropout' not in layer_definition else layer_definition['dropout']
+    init_weights = None if 'init_weights' not in layer_definition else layer_definition['init_weights']
+    init_bias = None if 'init_bias' not in layer_definition else layer_definition['init_bias']
 
     layer = None
 
@@ -49,21 +52,23 @@ def create_layer(previous_output, layer_definition):
         stride = (1, 1) if 'stride' not in layer_definition else layer_definition['stride']
         pool = (1, 1) if 'pool' not in layer_definition else layer_definition['pool']
 
-        layer = ConvolutionalLayer(name,
-                                   input=input_shape,
-                                   filters=filters,
-                                   stride=stride,
-                                   pool=pool,
-                                   activation=activation)
+        layer = ConvolutionalLayer(name, input=input_shape, filters=filters, stride=stride, pool=pool,
+                                   activation=activation, dropout=dropout, init_bias=init_bias, init_weights=init_weights)
 
     if layer_type == 'hidden':
         n_input = np.prod(input_shape) if type(input_shape) != int else input_shape
         n_output = layer_definition['output_shape']
-        layer = HiddenLayer(name, n_input, n_output, activation)
+        layer = HiddenLayer(name, n_in=n_input, n_out=n_output, activation=activation, dropout=dropout,
+                            init_weights=init_weights,
+                            init_bias=init_bias)
 
     if layer_type == 'softmax':
         n_input = np.prod(input_shape) if type(input_shape) != int else input_shape
         n_output = layer_definition['output_shape']
-        layer = SoftMaxLayer(name, n_input, n_output)
+        layer = SoftMaxLayer(name,
+                             n_in=n_input,
+                             n_out=n_output,
+                             init_weights=init_weights,
+                             init_bias=init_bias)
 
     return layer

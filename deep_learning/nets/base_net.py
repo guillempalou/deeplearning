@@ -36,12 +36,12 @@ class BaseNet(object):
 
         # define the predict function
         self.predict = theano.function(inputs=[self.X],
-                                       outputs=self.transform(self.X),
+                                       outputs=self.transform(self.X, 'test'),
                                        allow_input_downcast=True)
 
 
     @abc.abstractmethod
-    def transform(self, x):
+    def transform(self, x, mode='train'):
         pass
 
     def gradient(self, cost):
@@ -75,7 +75,6 @@ class BaseNet(object):
         if parameters.train_loss == 'mse':
             loss = T.mean(T.sum(T.square(self.transform(x) - y)))
 
-
         # TODO add regularization depending on the layer
         return loss + \
                parameters.l1 * l1_norm(self.params) + \
@@ -83,11 +82,24 @@ class BaseNet(object):
 
     def test_cost_function(self, x, y, parameters):
 
+        t = self.transform(x, 'test')
+        yout = y
+
+        if parameters.augmented > 1:
+            n = parameters.minibatch
+            dups = parameters.augmented
+            tr = t.reshape((n, dups, self.output_shape))
+            xout = tr.mean(axis=1)
+            # todo inefficient use of memory and cpu
+            yout = y[::dups]
+        else:
+            xout = t
+
         if parameters.test_loss == 'accuracy':
-            z = T.mean(T.neq(T.argmax(self.transform(x), axis=1), y))
+            z = T.mean(T.neq(T.argmax(xout, axis=1), yout))
 
         if parameters.test_loss == 'crossentropy':
-            z = -T.mean(T.log(self.transform(x)[T.arange(y.shape[0]), y]))
+            z = -T.mean(T.log(xout[T.arange(yout.shape[0]), yout]))
 
         return z
 
@@ -126,11 +138,12 @@ class BaseNet(object):
         updates = self.update_parameters(self.train_cost, parameters)
 
         if data_in_gpu:
-            minibatch = parameters.minibatch
+            minibatch = parameters.minibatch*parameters.augmented
 
             self.logger.debug("Setting up functions for minibatches in GPU")
             self.train_function = theano.function(inputs=[self.index],
-                                                  outputs=[self.train_cost, self.test_cost], updates=updates,
+                                                  outputs=[self.train_cost, self.test_cost],
+                                                  updates=updates,
                                                   allow_input_downcast=True,
                                                   givens={
                                                       self.X: self.train_set_x[
@@ -141,7 +154,8 @@ class BaseNet(object):
 
         self.logger.debug("Setting up functions for raw inputs")
         self.train_function_raw = theano.function(inputs=[self.X, self.Y],
-                                                  outputs=[self.train_cost, self.test_cost], updates=updates,
+                                                  outputs=[self.train_cost, self.test_cost],
+                                                  updates=updates,
                                                   allow_input_downcast=True)
 
 
@@ -150,7 +164,7 @@ class BaseNet(object):
         self.test_cost = self.test_cost_function(self.X, self.Y, parameters)
 
         if data_in_gpu:
-            minibatch = parameters.minibatch
+            minibatch = parameters.minibatch*parameters.augmented
             self.test_function = theano.function(inputs=[self.index],
                                                  outputs=self.test_cost,
                                                  allow_input_downcast=True,
@@ -174,7 +188,7 @@ class BaseNet(object):
             return self.train_function_raw(x, y)
 
 
-    def test(self, x=None, y=None, index=0):
+    def test(self, x=None, y=None, index=0, augmented=1):
         if x is None and y is None:
             return self.test_function(index)
         else:
