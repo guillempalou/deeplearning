@@ -25,33 +25,29 @@ def create_shared_variable(name, shape, init_method):
 
     logger.debug("Creating tensor {0} with shape {1} with initialization {2}".format(name, shape, init_method))
 
-    if init_method == 'tanh':
+    if type(init_method) != list:
         # generate random numbers in the linear activation region for neurons
         ulimit = sqrt(3.0/n_elements)
         llimit = -ulimit
+        logger.debug("Initializing tensor of shape {0} with  uniform({1},{2})".format(shape, llimit, ulimit))
         value = rng.uniform(llimit, ulimit, shape)
-
-    if init_method == 'softmax' or init_method == 'logistic':
-        ulimit = sqrt(3.0/n_elements)
-        llimit = -ulimit
-        value = rng.uniform(llimit, ulimit, shape)
-
-    if init_method == 'relu':
-        value = rng.normal(0, np.sqrt(1.0/n_elements), shape)
-
-    if type(init_method) == list:
+    elif type(init_method) == list:
         pdf = init_method[0]
         # add more pdfs
         if pdf == 'normal':
             mean = float(init_method[1])
             std = float(init_method[2])
+            logger.debug("Initializing tensor of shape {0} with  normal({1},{2})".format(shape, mean, std))
             value = rng.normal(mean, std, shape)
 
         if pdf == 'uniform':
             llimit = float(init_method[1])
             ulimit = float(init_method[2])
+            logger.debug("Initializing tensor of shape {0} with  uniform({1},{2})".format(shape, llimit, ulimit))
+
             value = rng.uniform(llimit, ulimit, shape)
     elif isinstance(init_method, (int, long, float, complex)):
+        logger.debug("Initializing tensor of shape {0} with constant {1}".format(shape, init_method))
         value = init_method * np.ones(shape)
 
 
