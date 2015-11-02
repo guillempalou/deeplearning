@@ -16,6 +16,7 @@ def create_theano_tensor(name, dims, out_type):
     return theano_types[out_type][dims](name)
 
 
+
 def create_shared_variable(name, shape, init_method):
 
     value = None
@@ -25,13 +26,15 @@ def create_shared_variable(name, shape, init_method):
 
     logger.debug("Creating tensor {0} with shape {1} with initialization {2}".format(name, shape, init_method))
 
-    if type(init_method) != list:
+    is_list = isinstance(init_method, [tuple, list])
+
+    if isinstance(init_method, [tuple, list]):
         # generate random numbers in the linear activation region for neurons
         ulimit = sqrt(3.0/n_elements)
         llimit = -ulimit
         logger.debug("Initializing tensor of shape {0} with  uniform({1},{2})".format(shape, llimit, ulimit))
         value = rng.uniform(llimit, ulimit, shape)
-    elif type(init_method) == list:
+    elif :
         pdf = init_method[0]
         # add more pdfs
         if pdf == 'normal':
