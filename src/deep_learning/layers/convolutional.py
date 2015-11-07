@@ -1,11 +1,12 @@
 import logging
-import theano
+
 import theano.tensor as T
 import numpy as np
 from theano.tensor.nnet import conv
 from theano.tensor.signal import downsample
-from deep_learning.common.tensors import create_shared_variable
-from deep_learning.layers.base_layer import BaseLayer
+
+from src.deep_learning import create_shared_variable
+from src.deep_learning import BaseLayer
 
 
 class ConvolutionalLayer(BaseLayer):

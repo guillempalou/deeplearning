@@ -4,10 +4,9 @@ sys.path.extend(['/Users/guillem/developer/kaggle/deep_learning'])
 
 import matplotlib.pyplot as plt
 import theano
-import theano.tensor as T
 from skimage.io import imread
-from deep_learning.common.tensors import create_theano_tensor
-from deep_learning.layers.convolutional import ConvolutionalLayer
+from src.deep_learning import create_theano_tensor
+from src.deep_learning import ConvolutionalLayer
 import numpy as np
 
 img = imread('/Users/guillem/developer/kaggle/digit/resources/test.jpg').astype(np.float32) / 255

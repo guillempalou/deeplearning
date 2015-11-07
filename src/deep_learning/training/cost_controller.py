@@ -1,7 +1,9 @@
 import logging
+
 import theano
 import theano.tensor as T
-from deep_learning.common.cost_functions import cross_entropy, mse, l1_norm, l2_sqnorm, accuracy
+
+from src.deep_learning import cross_entropy, mse, l1_norm, l2_sqnorm, accuracy
 
 
 class CostController:

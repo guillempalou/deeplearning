@@ -1,8 +1,9 @@
 import logging
-import numpy as np
+
 import theano.tensor as T
-from deep_learning.common.tensors import create_shared_variable
-from deep_learning.layers.base_layer import BaseLayer
+
+from src.deep_learning import create_shared_variable
+from src.deep_learning import BaseLayer
 
 
 class HiddenLayer(BaseLayer):

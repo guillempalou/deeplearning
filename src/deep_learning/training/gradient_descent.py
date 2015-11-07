@@ -1,6 +1,7 @@
 import logging
+
 from deep_learning.io.net_io import save_net
-from deep_learning.training.cost_controller import CostController
+from src.deep_learning.training.cost_controller import CostController
 from deep_learning.training.gradient_controller import GradientController
 
 

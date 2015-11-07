@@ -1,7 +1,7 @@
-from deep_learning.common.tensors import create_theano_tensor
-from deep_learning.layers.softmax import SoftMaxLayer
-from deep_learning.nets.base_net import BaseNet
-from deep_learning.layers.hidden_layer import HiddenLayer
+from src.deep_learning import create_theano_tensor
+from src.deep_learning import SoftMaxLayer
+from src.deep_learning import BaseNet
+from src.deep_learning import HiddenLayer
 
 
 class MLP(BaseNet):

@@ -1,11 +1,12 @@
 import logging
-import yaml
 
+import yaml
 import numpy as np
-from deep_learning.layers.convolutional import ConvolutionalLayer
-from deep_learning.layers.hidden_layer import HiddenLayer
-from deep_learning.layers.softmax import SoftMaxLayer
-from deep_learning.nets.deep import DeepNet
+
+from src.deep_learning import ConvolutionalLayer
+from src.deep_learning import HiddenLayer
+from src.deep_learning import SoftMaxLayer
+from src.deep_learning import DeepNet
 
 logger = logging.getLogger("NET_FACTORY")
 

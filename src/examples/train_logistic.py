@@ -1,5 +1,6 @@
 import logging
 import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7,22 +8,23 @@ FORMAT = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 logger = logging.getLogger("GENERAL")
 
+
 sys.path.extend(['/Users/guillem/developer/kaggle/deep_learning'])
 
-from deep_learning.nets.mlp import MLP
-from deep_learning.training.gradient_descent_gpu import gradient_descent
-from deep_learning.training.learning_parameters import DescentParameters, ValidationParameters
+from src.deep_learning import Logistic
+from src.deep_learning import gradient_descent
+from src.deep_learning import DescentParameters, ValidationParameters
 
 N = 1000
-K = 2
+K = 1
 feats = 2
-classes = 3
+classes = 2
 
 # np.random.seed(seed=0)
 
 points = np.zeros(((N * K * classes), feats + 1))
 for c in range(K * classes):
-    mean = np.random.random(2)*7
+    mean = np.random.random(2)*5
     cov = (0.7 * np.eye(2, 2) + 0.3 * np.random.random((2, 2))) * 0.4
     cov = np.dot(cov, cov.T)  # make it positive semidefinite
     points[c * N:(c + 1) * N, :-1] = np.random.multivariate_normal(mean, cov, N)
@@ -34,9 +36,9 @@ X, Y = points[permutation, :-1].astype(np.float32), \
 
 """ Model definition and training """
 
-model = MLP("MLP", feats, 30, classes)
+model = Logistic("Logistic", feats, classes)
 
-learning_parameters = DescentParameters(epochs=1000, minibatch=100, l1=0, l2=0, momentum=0.9)
+learning_parameters = DescentParameters(epochs=1000, minibatch=100, momentum=0.9)
 validation_parameters = ValidationParameters()
 
 logger.info("Begin")
@@ -46,10 +48,10 @@ for tc, vc in gradient_descent(model, X, Y, learning_parameters, validation_para
 
 """ Drawing stuff """
 
-xmin = np.min(points[:, 0]) - 0.5
-xmax = np.max(points[:, 0]) + 0.5
-ymin = np.min(points[:, 1]) - 0.5
-ymax = np.max(points[:, 1]) + 0.5
+xmin = np.min(points[:, 0]) - 0.1
+xmax = np.max(points[:, 0]) + 0.1
+ymin = np.min(points[:, 1]) - 0.1
+ymax = np.max(points[:, 1]) + 0.1
 
 h = 0.02
 xx, yy = np.meshgrid(np.arange(xmin, xmax, h),

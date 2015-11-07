@@ -1,6 +1,6 @@
-import json
 import pickle
-from deep_learning.nets.net_factory import create_net_from_file, create_net_from_dict
+
+from src.deep_learning import create_net_from_dict
 
 
 def save_net(filename, nnet, parameters=None, protocol=2):

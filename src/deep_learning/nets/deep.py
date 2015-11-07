@@ -1,7 +1,9 @@
 import logging
-from deep_learning.common.tensors import create_theano_tensor
-from deep_learning.layers.convolutional import ConvolutionalLayer
-from deep_learning.nets.base_net import BaseNet
+
+from src.deep_learning import create_theano_tensor
+from src.deep_learning import ConvolutionalLayer
+from src.deep_learning import BaseNet
+
 
 class DeepNet(BaseNet):
 
