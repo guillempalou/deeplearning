@@ -1,8 +1,9 @@
 import logging
+
 import numpy as np
 import theano
 
-from deep_learning.initialization.base_initializer import BaseInitializer
+from deep_learning.units.initialization import BaseInitializer
 
 
 class ConstantInitializer(BaseInitializer):
@@ -19,4 +20,9 @@ class ConstantInitializer(BaseInitializer):
         self.value = value
 
     def create_shared(self, **kwargs):
+        """
+        Returns a shared variable with constant values
+        :param kwargs: not used
+        :return: shared variable
+        """
         return theano.shared(np.ones(self.shape) * self.value)

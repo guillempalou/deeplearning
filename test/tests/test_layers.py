@@ -1,10 +1,10 @@
 import numpy as np
 import theano
 import theano.tensor as T
-
-from deep_learning.initialization.constant_initializer import ConstantInitializer
-from deep_learning.layers.softmax import SoftMaxLayer
 from numpy.testing import assert_allclose
+
+from deep_learning.layers.softmax import SoftMaxLayer
+from deep_learning.units.initialization.constant_initializer import ConstantInitializer
 
 
 def test_base():
@@ -12,12 +12,13 @@ def test_base():
 
 
 def test_softmax():
+
     parameters = {
         "name": "test_softmax",
         "in_shape": 3,
         "out_shape": 2,
-        #TODO change the constructor parameters of initializers to make it easy
-        "initializer": {"w": ConstantInitializer(.1), "b": ConstantInitializer("b", 2., 1.)}
+        "initializer": {"w": ConstantInitializer("w", (3, 2), .1),
+                        "b": ConstantInitializer("b", 2., 1.)}
     }
 
     sl = SoftMaxLayer(**parameters)

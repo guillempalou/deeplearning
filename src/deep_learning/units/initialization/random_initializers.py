@@ -1,9 +1,10 @@
 import logging
-import numpy as np
-import theano
-import scipy.stats as scs
 
-from deep_learning.initialization.base_initializer import BaseInitializer
+import numpy as np
+import scipy.stats as scs
+import theano
+
+from deep_learning.units.initialization import BaseInitializer
 
 
 class RandomInitializer(BaseInitializer):
@@ -20,7 +21,7 @@ class RandomInitializer(BaseInitializer):
         self.distribution = distribution
         self.shape = shape
 
-    def create_shared(self, *args, **kwargs):
+    def create_shared(self, **kwargs):
         return theano.shared(self.distribution.rvs(self.shape), **kwargs)
 
 

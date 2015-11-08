@@ -1,9 +1,8 @@
-import numpy as np
-from numpy.testing import assert_array_less, assert_almost_equal
 import scipy.stats as scs
-
-from deep_learning.initialization.constant_initializer import ConstantInitializer
 from deep_learning.initialization.random_initializers import RandomInitializer
+from numpy.testing import assert_array_less, assert_almost_equal
+
+from deep_learning.units.initialization.constant_initializer import ConstantInitializer
 
 
 def test_constant():

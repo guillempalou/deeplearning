@@ -8,4 +8,9 @@ class BaseInitializer(object):
         self.logger.debug("Instantiating initializer object")
 
     def create_shared(self, **kwargs):
+        """
+        Abstract method to create a theano shared variable
+        :param kwargs:
+        :return:
+        """
         return NotImplementedError("You should subclass the method")
