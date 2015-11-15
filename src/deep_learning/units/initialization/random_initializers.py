@@ -4,7 +4,7 @@ import numpy as np
 import scipy.stats as scs
 import theano
 
-from deep_learning.units.initialization import BaseInitializer
+from deep_learning.units.initialization.base_initializer import BaseInitializer
 
 
 class RandomInitializer(BaseInitializer):

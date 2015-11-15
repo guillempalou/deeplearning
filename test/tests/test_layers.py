@@ -3,7 +3,7 @@ import theano
 import theano.tensor as T
 from numpy.testing import assert_allclose
 
-from deep_learning.layers.softmax import SoftMaxLayer
+from deep_learning.layers.softmax_layer import SoftMaxLayer
 from deep_learning.units.initialization.constant_initializer import ConstantInitializer
 
 

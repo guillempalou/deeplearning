@@ -1,32 +1,52 @@
-from src.deep_learning import create_theano_tensor
-from src.deep_learning import SoftMaxLayer
-from src.deep_learning import BaseNet
-from src.deep_learning import HiddenLayer
+import networkx as nx
+import theano
+import theano.tensor as T
+
+from deep_learning.layers.hidden_layer import HiddenLayer
+from deep_learning.layers.softmax_layer import SoftMaxLayer
+from deep_learning.nets.feed_forward_net import FeedForwardNet
+from deep_learning.units.initialization.random_initializers import FanInOutInitializer
 
 
-class MLP(BaseNet):
+class MLP(FeedForwardNet):
 
-    def __init__(self, name, n_in, n_hidden, n_out):
+    """
+    Implementation of the multilayer perceptron. Consists of a hidden layer
+    and a softmax output layer. It is possible to choose the activation function
+    for the hidder layer
+    """
 
-        self.name = name
+    def __init__(self, name, in_shape, hidden_shape, out_shape, **kwargs):
 
-        self.hidden_layer = HiddenLayer(name + "_hidden", n_in, n_hidden, activation='tanh', init_weights=null,
-                                        init_bias=null, dropout=0)
-        self.output_layer = SoftMaxLayer(name + "_output", n_hidden, n_out)
+        super(MLP, self).__init__(name=name, in_shape=in_shape, out_shape=out_shape, **kwargs)
 
-        self.layers = [self.hidden_layer, self.output_layer]
+        hidden_name = name + "_hidden"
+        output_name = name + "_output"
 
-        self.X = create_theano_tensor(name + "_X", 2, float)
-        self.Y = create_theano_tensor(name + "_Y", 1, int)
+        initializer_h_w = FanInOutInitializer(hidden_name + "_w", (in_shape, hidden_shape))
+        initializer_h_b = FanInOutInitializer(hidden_name + "_b", hidden_shape)
+        initializer_w = FanInOutInitializer(output_name + "_w", (hidden_shape, out_shape))
+        initializer_b = FanInOutInitializer(output_name + "_b", out_shape)
 
-        self.params = self.hidden_layer.params + self.output_layer.params
+        hidden_layer = HiddenLayer(name=hidden_name,
+                                   in_shape=in_shape,
+                                   out_shape=hidden_shape,
+                                   initializer={"w": initializer_h_w, "b": initializer_h_b})
 
-        super(MLP, self).__init__(name)
+        output_layer = SoftMaxLayer(name=output_name,
+                                    in_shape=hidden_shape,
+                                    out_shape=out_shape,
+                                    initializer={"w": initializer_w, "b": initializer_b})
+
+        # create a graph for the net
+        g = nx.DiGraph()
+        g.add_node(hidden_layer)
+        g.add_node(output_layer)
+        g.add_edge(hidden_layer, output_layer)
+        self.create_net(g)
 
 
-    def transform(self, x, mode):
-        output_hidden = self.hidden_layer.transform(x, mode)
-        output = self.output_layer.transform(output_hidden, mode)
-        return output
-
-
+net = MLP(name="mlp", in_shape=4, hidden_shape=3, out_shape=2)
+x = T.vector()
+f = theano.function(net.transform(x))
+print(f([1, 2, 3, 4]))

@@ -1,7 +1,7 @@
 import logging
 import theano.tensor as T
 
-from deep_learning.layers.linear_unit import LinearUnitLayer
+from deep_learning.layers.linear_unit_layer import LinearUnitLayer
 
 
 class HiddenLayer(LinearUnitLayer):

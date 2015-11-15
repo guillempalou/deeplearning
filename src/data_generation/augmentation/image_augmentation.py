@@ -1,7 +1,7 @@
 import abc
 import logging
 
-from src.deep_learning.augmentation.base_augmentation import BaseAugmentation
+from data_generation.augmentation import BaseAugmentation
 
 
 class ImageAugmentation(BaseAugmentation):

@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import theano
 
-from deep_learning.units.initialization import BaseInitializer
+from deep_learning.units.initialization.base_initializer import BaseInitializer
 
 
 class ConstantInitializer(BaseInitializer):

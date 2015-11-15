@@ -1,25 +1,31 @@
-from src.deep_learning import create_theano_tensor
-from src.deep_learning import SoftMaxLayer
-from src.deep_learning import BaseNet
+import networkx as nx
+
+from deep_learning.layers.softmax_layer import SoftMaxLayer
+from deep_learning.nets.feed_forward_net import FeedForwardNet
+from deep_learning.units.initialization.random_initializers import FanInOutInitializer
 
 
-class Logistic(BaseNet):
-    def __init__(self, name, n_in, n_out):
-        self.name = name
-        self.output_layer = SoftMaxLayer(name + "_output", n_in, n_out)
-        self.layers = [self.output_layer]
+class LogisticNet(FeedForwardNet):
+    """
+    Creates a simple net with a simple Softmax Layer
+    """
 
-        # define the parameters
-        self.params = [self.output_layer.w, self.output_layer.b]
+    def __init__(self, name, in_shape, out_shape, **kwargs):
+        super(LogisticNet, self).__init__(name=name, in_shape=in_shape, out_shape=out_shape, **kwargs)
 
-        # define inputs and outputs based on the layers
-        self.X = create_theano_tensor('logistic_gt', 2, float)
-        self.Y = create_theano_tensor('logistic_gt', 1, int)
+        layer_name = name + "_output"
 
-        # call the base class
-        super(Logistic, self).__init__(name)
+        initializer_w = FanInOutInitializer(layer_name + "_w", (in_shape, out_shape))
+        initializer_b = FanInOutInitializer(layer_name + "_b", out_shape)
 
-    def transform(self, x, mode):
-        return self.output_layer.transform(x, mode)
+        output_layer = SoftMaxLayer(name=layer_name,
+                                    in_shape=in_shape,
+                                    out_shape=out_shape,
+                                    initializer={"w": initializer_w, "b": initializer_b})
+
+        # create a graph for the net
+        g = nx.DiGraph()
+        g.add_node(output_layer)
+        self.create_net(g)
 
 

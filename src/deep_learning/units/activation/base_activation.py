@@ -11,4 +11,10 @@ class BaseActivation(object):
         pass
 
     def __call__(self, x, **kwargs):
-        raise NotImplementedError("You need to implement activation __call__()")
+        """
+        Return the identity activation
+        :param x:
+        :param kwargs:
+        :return:
+        """
+        return x

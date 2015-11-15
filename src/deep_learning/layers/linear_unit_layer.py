@@ -1,6 +1,6 @@
 from theano import tensor as T
-
 from deep_learning.layers.base_layer import BaseLayer
+from deep_learning.units.activation.base_activation import BaseActivation
 
 
 class LinearUnitLayer(BaseLayer):
@@ -15,7 +15,7 @@ class LinearUnitLayer(BaseLayer):
         self.b = kwargs["initializer"]["b"].create_shared()
 
         # our activation function is the identity by default
-        self.activation = lambda x, **kwargs: x
+        self.activation = BaseActivation()
 
     def transform(self, x, **kwargs):
         """
@@ -40,9 +40,9 @@ class LinearUnitLayer(BaseLayer):
         """
         return self.b.get_value()
 
-    def get_variables(self):
+    def get_parameters(self):
         """
         Returns the shared variables of the layer
-        :return: list of shared variables
+        :return: dict of shared variables
         """
-        return [self.w, self.b]
+        return {self.w.name: self.w, self.b.name: self.b}
