@@ -15,7 +15,8 @@ class BaseNet(object):
         self.in_shape = kwargs["in_shape"]
         self.out_shape = kwargs["out_shape"]
 
-        # dictionary containing all the net variables
+        # dictionary (string -> theano variable)
+        # containing all the net variables
         self.params = {}
 
         # dictionary (string -> layer) containing each layer
@@ -42,7 +43,7 @@ class BaseNet(object):
         Gets the values of all parameters for the network as a dict
         :return: dict
         """
-        return {param[0]: param[1].get_value() for param in self.params}
+        return {param[0]: param[1].get_value() for param in self.params.items()}
 
     def set_paramaters_values(self, values):
         """
@@ -68,9 +69,13 @@ class BaseNet(object):
         self.logger.info("Computing order of the layers")
 
         for layer in net_graph.nodes_iter():
+            self.logger.debug("Adding layer {0}".format(layer))
             self.add_layer(layer)
 
-        self.inputs = [self.topology.predecessors(layer) for layer in self.layers.values()]
+            # add parameters to the dictionary
+            self.params.update(layer.get_parameters())
+
+        self.inputs = {layer: self.topology.predecessors(layer) for layer in self.layers.values()}
 
     def definition(self):
         """

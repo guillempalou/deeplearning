@@ -4,8 +4,10 @@ import logging
 class BaseInitializer(object):
     logger = logging.getLogger("BaseInitializer")
 
-    def __init__(self):
-        self.logger.debug("Instantiating initializer object")
+    def __init__(self, name, shape):
+        self.logger.debug("Instantiating initializer object {0} - {1})".format(name, shape))
+        self.name = name
+        self.shape = shape
 
     def create_shared(self, **kwargs):
         """

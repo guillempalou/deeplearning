@@ -14,7 +14,7 @@ class ConstantInitializer(BaseInitializer):
     logger = logging.getLogger(__name__ + "." + "ConstantInitializer")
 
     def __init__(self, name, shape, value):
-        super(ConstantInitializer, self).__init__()
+        super(ConstantInitializer, self).__init__(name, shape)
         self.name = name
         self.shape = shape
         self.value = value
@@ -25,4 +25,4 @@ class ConstantInitializer(BaseInitializer):
         :param kwargs: not used
         :return: shared variable
         """
-        return theano.shared(np.ones(self.shape) * self.value)
+        return theano.shared(np.ones(self.shape) * self.value, name=self.name)

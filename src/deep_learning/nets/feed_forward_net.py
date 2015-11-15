@@ -40,13 +40,16 @@ class FeedForwardNet(BaseNet):
             return None
 
         for layer in self.order:
-            self.logger.info("Setting up layer transformation {0}".format(layer))
-            if layer not in self.inputs:
+            self.logger.info("Setting up layer transformation: {0}".format(layer))
+            if len(self.inputs[layer]) == 0:
                 input_tensor = x
             else:
                 self.logger.debug("Stacking tensors, multiple inputs for layer {0}".format(layer))
+                self.logger.debug("Inputs are: {0}".format([str(x) for x in self.inputs[layer]]))
+
                 # currently only supports stacking vectors
                 input_tensor = T.stack(*[self.outputs[x].ravel() for x in self.inputs[layer]])
+            self.logger.debug("Input shape tensor {0}".format(input_tensor.shape))
 
             # TODO a priori check of input shapes
             # check if the input to the next layer is not
@@ -59,6 +62,7 @@ class FeedForwardNet(BaseNet):
 
             self.outputs[layer] = layer.transform(input_tensor, **kwargs)
 
+        self.logger.debug("Transformation setup completed")
         # TODO accept multiple output layers?
         # get the output layer
         return self.outputs[self.order[-1]]

@@ -16,13 +16,12 @@ class RandomInitializer(BaseInitializer):
     logger = logging.getLogger(__name__ + "." + "RandomInitializer")
 
     def __init__(self, name, shape, distribution):
-        super(RandomInitializer, self).__init__()
-        self.name = name
+        super(RandomInitializer, self).__init__(name, shape)
         self.distribution = distribution
         self.shape = shape
 
     def create_shared(self, **kwargs):
-        return theano.shared(self.distribution.rvs(self.shape), **kwargs)
+        return theano.shared(self.distribution.rvs(self.shape), name=self.name, **kwargs)
 
 
 class FanInOutInitializer(RandomInitializer):
@@ -32,7 +31,7 @@ class FanInOutInitializer(RandomInitializer):
     logger = logging.getLogger("NormalizedRandomInitializer")
 
     def __init__(self, name, shape):
+        self.logger.debug("Initializing {0} with shape {1}".format(name, shape))
         bound = np.sqrt(6. / np.sum(shape))
-        super(FanInOutInitializer, self).__init__(name,
-                                                  shape,
+        super(FanInOutInitializer, self).__init__(name, shape,
                                                   scs.uniform(-bound, bound))

@@ -1,3 +1,5 @@
+import logging
+
 import networkx as nx
 import theano
 import theano.tensor as T
@@ -23,10 +25,10 @@ class MLP(FeedForwardNet):
         hidden_name = name + "_hidden"
         output_name = name + "_output"
 
-        initializer_h_w = FanInOutInitializer(hidden_name + "_w", (in_shape, hidden_shape))
-        initializer_h_b = FanInOutInitializer(hidden_name + "_b", hidden_shape)
-        initializer_w = FanInOutInitializer(output_name + "_w", (hidden_shape, out_shape))
-        initializer_b = FanInOutInitializer(output_name + "_b", out_shape)
+        initializer_h_w = FanInOutInitializer(hidden_name + "_w", shape=(in_shape, hidden_shape))
+        initializer_h_b = FanInOutInitializer(hidden_name + "_b", shape=hidden_shape)
+        initializer_w = FanInOutInitializer(output_name + "_w", shape=(hidden_shape, out_shape))
+        initializer_b = FanInOutInitializer(output_name + "_b", shape=out_shape)
 
         hidden_layer = HiddenLayer(name=hidden_name,
                                    in_shape=in_shape,
@@ -45,8 +47,3 @@ class MLP(FeedForwardNet):
         g.add_edge(hidden_layer, output_layer)
         self.create_net(g)
 
-
-net = MLP(name="mlp", in_shape=4, hidden_shape=3, out_shape=2)
-x = T.vector()
-f = theano.function(net.transform(x))
-print(f([1, 2, 3, 4]))

@@ -9,7 +9,7 @@ class HiddenLayer(LinearUnitLayer):
     logger = logging.getLogger("HiddenLayer")
 
     def __init__(self, name, **kwargs):
-        super(HiddenLayer, self).__init__(**kwargs)
+        super(HiddenLayer, self).__init__(name=name, **kwargs)
         self.logger.debug("Creating hidden layer {0}".format(name))
         self.logger.debug("Layer with {0} inputs and {1} outputs".format(self.in_shape, self.out_shape))
 

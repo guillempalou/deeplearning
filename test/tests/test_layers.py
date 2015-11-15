@@ -17,8 +17,8 @@ def test_softmax():
         "name": "test_softmax",
         "in_shape": 3,
         "out_shape": 2,
-        "initializer": {"w": ConstantInitializer("w", (3, 2), .1),
-                        "b": ConstantInitializer("b", 2., 1.)}
+        "initializer": {"w": ConstantInitializer("w", (3, 2), 1),
+                        "b": ConstantInitializer("b", 2, 1)}
     }
 
     sl = SoftMaxLayer(**parameters)

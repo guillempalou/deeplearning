@@ -15,8 +15,8 @@ class LogisticNet(FeedForwardNet):
 
         layer_name = name + "_output"
 
-        initializer_w = FanInOutInitializer(layer_name + "_w", (in_shape, out_shape))
-        initializer_b = FanInOutInitializer(layer_name + "_b", out_shape)
+        initializer_w = FanInOutInitializer(layer_name + "_w", shape=(in_shape, out_shape))
+        initializer_b = FanInOutInitializer(layer_name + "_b", shape=out_shape)
 
         output_layer = SoftMaxLayer(name=layer_name,
                                     in_shape=in_shape,
