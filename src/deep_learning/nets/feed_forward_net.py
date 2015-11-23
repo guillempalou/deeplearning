@@ -1,6 +1,7 @@
 import logging
 import networkx as nx
 import theano
+from theano.printing import pp
 import theano.tensor as T
 from deep_learning.nets.base_net import BaseNet
 
@@ -25,6 +26,7 @@ class FeedForwardNet(BaseNet):
         """
         super(FeedForwardNet, self).create_net(net_graph)
         self.order = nx.topological_sort(net_graph)
+        self.logger.debug("Order of the layers is: {0}".format(self.order))
 
     def transform(self, x, **kwargs):
         """
@@ -42,6 +44,7 @@ class FeedForwardNet(BaseNet):
         for layer in self.order:
             self.logger.info("Setting up layer transformation: {0}".format(layer))
             if len(self.inputs[layer]) == 0:
+                self.logger.debug("Layer {0} is an input layer".format(layer))
                 input_tensor = x
             else:
                 self.logger.debug("Stacking tensors, multiple inputs for layer {0}".format(layer))

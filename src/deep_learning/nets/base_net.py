@@ -53,12 +53,22 @@ class BaseNet(object):
         for (param, value) in values.items():
             self.params[param].set_value(value)
 
+    def get_parameters(self):
+        """
+        Returns a list with the parameters, without getting the values
+        :retrun: list
+        """
+        return self.params.values()
+
     def add_layer(self, layer):
         """
         adds a layer to the network
         :param layer:
         """
         self.layers[layer.name] = layer
+
+        # add parameters to the dictionary
+        self.params.update(layer.get_parameters())
 
     def create_net(self, net_graph):
         """
@@ -71,9 +81,6 @@ class BaseNet(object):
         for layer in net_graph.nodes_iter():
             self.logger.debug("Adding layer {0}".format(layer))
             self.add_layer(layer)
-
-            # add parameters to the dictionary
-            self.params.update(layer.get_parameters())
 
         self.inputs = {layer: self.topology.predecessors(layer) for layer in self.layers.values()}
 

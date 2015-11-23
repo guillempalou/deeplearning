@@ -3,7 +3,8 @@ import networkx as nx
 from deep_learning.layers.softmax_layer import SoftMaxLayer
 from deep_learning.nets.feed_forward_net import FeedForwardNet
 from deep_learning.units.initialization.random_initializers import FanInOutInitializer
-
+import theano
+import theano.tensor as T
 
 class LogisticNet(FeedForwardNet):
     """
@@ -22,6 +23,10 @@ class LogisticNet(FeedForwardNet):
                                     in_shape=in_shape,
                                     out_shape=out_shape,
                                     initializer={"w": initializer_w, "b": initializer_b})
+
+        # create variables based for input/output
+        self.X = T.dmatrix("input")
+        self.Y = T.ivector("output")
 
         # create a graph for the net
         g = nx.DiGraph()
