@@ -33,12 +33,14 @@ class MLP(FeedForwardNet):
         hidden_layer = HiddenLayer(name=hidden_name,
                                    in_shape=in_shape,
                                    out_shape=hidden_shape,
-                                   initializer={"w": initializer_h_w, "b": initializer_h_b})
+                                   initializer={"w": initializer_h_w, "b": initializer_h_b},
+                                   **kwargs)
 
         output_layer = SoftMaxLayer(name=output_name,
                                     in_shape=hidden_shape,
                                     out_shape=out_shape,
-                                    initializer={"w": initializer_w, "b": initializer_b})
+                                    initializer={"w": initializer_w, "b": initializer_b},
+                                    **kwargs)
 
         # create variables for input/output
         self.X = T.dmatrix("input")

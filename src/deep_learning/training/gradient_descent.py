@@ -32,9 +32,7 @@ class StochasticGradientDescent(object):
         if self.iteration == 0:
             self.setup(model)
 
-        return
-
-        for i in range(self.learning_parameters["max_iter"]):
+        for self.iteration in range(self.learning_parameters["max_iter"]):
 
             # self do a full iteration over the data
             self.do_epoch(model, X, Y)
@@ -56,27 +54,14 @@ class StochasticGradientDescent(object):
         X, Y = (model.X, model.Y)
 
         # initialize the train function
-        train_function = self.loss(model.transform(X, method="train"), Y)
-
-        # initialize the test function
-        test_function = model.transform(X, method="test")
+        # TODO add possible regularization on parameters
+        loss_function = self.loss(model.transform(X, method="train"), Y)
 
         # get the update equations for the model parameters
         # using the train function
-        updates = self.updates.update_parameters(model=model, loss=train_function)
+        updates = self.updates.update_parameters(model=model, loss=loss_function)
 
-        # setup the loss function based on the model prediction
-        self.train = theano.function(name="train_{0}".format(model.name),
-                                     inputs=[X, Y],
-                                     outputs=[train_function],
-                                     updates=updates)
-
-        self.test = theano.function(name="test_{0}".format(model.name),
-                                    inputs=[X],
-                                    outputs=[test_function])
-
-        theano.printing.debugprint(self.test)
-
+        model.setup_train_function(loss_function, updates)
 
     def do_epoch(self, model, X, Y):
         """
@@ -87,15 +72,17 @@ class StochasticGradientDescent(object):
         n_minibaches = np.ceil(n_samples / minibatch).astype(int)
 
         start = 0
+        epoch_loss = 0
         for bach in range(n_minibaches):
             end = min(n_samples, start + minibatch)
             x_batch = X[start:end, ...]
             y_batch = Y[start:end, ...]
 
             # compute the loss and update
-            print(self.test(x_batch)[0].shape)
-            continue
-            loss = self.train(x_batch, y_batch)
+            loss = model.fit(x_batch, y_batch)
             self.logger.debug("Loss on minibatch {0}: ".format(loss))
 
+            epoch_loss += loss
             start += minibatch
+
+        self.logger.info("Epoch {0} loss {1}".format(self.iteration, epoch_loss))

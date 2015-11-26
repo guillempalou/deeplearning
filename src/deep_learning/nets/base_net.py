@@ -1,6 +1,6 @@
 import logging
-
 import networkx as nx
+import theano
 
 
 class BaseNet(object):
@@ -28,6 +28,55 @@ class BaseNet(object):
         # dictionary (layer -> layers) with each layer input
         # useful to compute dependencies
         self.inputs = {}
+
+        # input and output theano tensor types
+        # subclasses should define them
+        self.X = None
+        self.Y = None
+
+        # train and test theano functions
+        self.train = None
+        self.test = None
+
+    def fit(self, x, y):
+        """
+        Does a single step on the training. Training function needs to be set up beforehand
+        :param x: input vector
+        :param y: output target vector
+        :return: loss value
+        """
+        return self.train(x, y)
+
+    def predict(self, x):
+        """
+        Functions that predicts the output for a given input
+        :param x: input vector
+        :return:
+        """
+        if self.test is None:
+            self.setup_test_function()
+        return self.test(x)
+
+    def setup_train_function(self, loss, updates):
+        # TODO instantiate updates here?
+        """
+        Sets up the theano function in charge of the training
+        :param loss: loss function for the target
+        :param updates: updates equations for this net's parameters
+        :return:
+        """
+        self.train = theano.function(name="train_{0}".format(self.name),
+                                     inputs=[self.X, self.Y],
+                                     outputs=loss,
+                                     updates=updates)
+
+    def setup_test_function(self):
+        """
+        Sets up the theano function in charge of the testing
+        """
+        self.test = theano.function(name="predict_{0}".format(self.name),
+                                    inputs=[self.X],
+                                    outputs=self.transform(self.X, mode="test"))
 
     def transform(self, x, **kwargs):
         """
