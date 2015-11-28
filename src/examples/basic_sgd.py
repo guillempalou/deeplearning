@@ -22,7 +22,7 @@ n_classes = 3
 mlp = MLP("mlp", 2, 10, n_classes, activation=T.tanh)
 loss = lambda x, y: -T.mean(T.log2(x[T.arange(0, y.shape[0]), y]))
 
-update = SGDUpdate(loss=loss, model=mlp)
+update = SGDUpdate(loss=loss, model=mlp, **learning_parameters)
 sgd = StochasticGradientDescent(loss=loss,
                                 learning_parameters=learning_parameters,
                                 updates=update)
