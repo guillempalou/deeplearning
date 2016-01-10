@@ -16,9 +16,10 @@ def test_base_activation():
 
 def test_dropout_activation():
     act = DropOutActivation(dropout=1)
-    x = np.array([-1, 0, 1])
-    assert_equal(np.zeros_like(x), act(x, mode="train"))
-    assert_equal(x, act(x, mode="test"))
+    x = np.array([-1., 0., 1.], dtype=np.float32)
+    X = T.vector("X")
+    f = theano.function([X], act(X, mode="test"))
+    assert_equal(x, f(x))
 
 
 def test_relu_activation():

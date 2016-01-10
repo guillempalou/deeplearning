@@ -1,6 +1,8 @@
 import logging
 
 import networkx as nx
+import theano
+import theano.tensor as T
 
 from deep_learning.nets.base_net import BaseNet
 
@@ -45,14 +47,15 @@ class FeedForwardNet(BaseNet):
             if len(self.inputs[layer]) == 0:
                 self.logger.debug("Layer {0} is an input layer".format(layer))
                 input_tensor = x
+            elif len(self.inputs[layer]) == 1:
+                self.logger.debug("Input tensor for layer {0}".format(layer))
+                input_tensor = self.outputs[self.inputs[layer][0]]
             else:
                 self.logger.debug("Stacking tensors, multiple inputs for layer {0}".format(layer))
                 self.logger.debug("Inputs are: {0}".format([str(x) for x in self.inputs[layer]]))
-                input_tensor = self.outputs[self.inputs[layer][0]]
 
                 # currently only supports stacking vectors
-                # input_tensor = T.stack(*[self.outputs[x].ravel() for x in self.inputs[layer]])
-            #self.logger.debug("Input shape tensor {0}".format(input_tensor.shape))
+                input_tensor = T.stack(*[self.outputs[x].ravel() for x in self.inputs[layer]])
 
             # TODO a priori check of input shapes
             # check if the input to the next layer is not
@@ -66,6 +69,5 @@ class FeedForwardNet(BaseNet):
             self.outputs[layer] = layer.transform(input_tensor, **kwargs)
 
         self.logger.debug("Transformation setup completed")
-        # TODO accept multiple output layers?
-        # get the output layer
+
         return self.outputs[self.order[-1]]

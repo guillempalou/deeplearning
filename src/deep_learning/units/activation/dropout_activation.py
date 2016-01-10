@@ -22,7 +22,7 @@ class DropOutActivation(BaseActivation):
 
     def __call__(self, x, **kwargs):
         if kwargs["mode"] == "train":
-            return x / (1-self.dropout)
+            return self.drop_output(x) / (1-self.dropout)
         else:
             return x
 

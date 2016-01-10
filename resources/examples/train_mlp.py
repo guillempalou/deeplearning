@@ -2,7 +2,6 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 
-import theano
 import theano.tensor as T
 
 from data_generation.gaussian_mixtures import generate_random_clouds
@@ -28,7 +27,7 @@ sgd = StochasticGradientDescent(loss=loss,
                                 updates=update)
 
 np.random.seed(12)
-X, Y = generate_random_clouds(1000, 3, 2, 2)
+X, Y = generate_random_clouds(1000, n_classes, 2, 2)
 
 sgd.fit(mlp, X, Y.astype(np.int32))
 

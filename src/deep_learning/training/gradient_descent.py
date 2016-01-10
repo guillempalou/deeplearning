@@ -80,7 +80,7 @@ class StochasticGradientDescent(object):
 
             # compute the loss and update
             loss = model.fit(x_batch, y_batch)
-            self.logger.debug("Loss on minibatch {0}: ".format(loss))
+            self.logger.debug("Loss on train minibatch {0}: ".format(loss))
 
             epoch_loss += loss
             start += minibatch

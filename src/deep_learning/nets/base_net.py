@@ -140,7 +140,7 @@ class BaseNet(object):
         """
         s = "Network: {0}\n".format(self.name)
 
-        return s + "\n".join([str(layer) for layer in self.layers.values()])
+        return s + "\n\t".join([str(layer) for layer in self.layers.values()])
 
     def __str__(self):
         return self.definition()

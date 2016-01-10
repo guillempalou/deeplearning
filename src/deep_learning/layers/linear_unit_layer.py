@@ -28,7 +28,7 @@ class LinearUnitLayer(BaseLayer):
         :param kwargs: additional arguments (ignored)
         :return: vector
         """
-        return self.activation(T.dot(x, self.w) + self.b)
+        return self.activation(T.dot(x, self.w) + self.b, **kwargs)
 
     def get_weights(self):
         """

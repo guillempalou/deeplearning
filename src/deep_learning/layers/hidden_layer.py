@@ -15,8 +15,7 @@ class HiddenLayer(LinearUnitLayer):
 
         # set the activation function for this layer
         # the activation is set to the identity on the parent class
-        if "activation" in kwargs:
-            self.activation = kwargs["activation"]
+        self.activation = kwargs.get("activation", self.activation)
 
         self.logger.debug("Activation {0} - {1} inputs and {2} outputs".format(self.activation,
                                                                                self.in_shape,
