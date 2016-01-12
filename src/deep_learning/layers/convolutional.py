@@ -9,12 +9,12 @@ from deep_learning.layers.base_layer import BaseLayer
 from deep_learning.units.activation.base_activation import BaseActivation
 
 
-class ConvolutionalLayer(BaseLayer):
-    logger = logging.getLogger("ConvolutionalLayer")
-
+class Convolutional2DLayer(BaseLayer):
+    logger = logging.getLogger("Convolutional2DLayer")
 
     def __init__(self, **kwargs):
-        super(ConvolutionalLayer, self).__init__(**kwargs)
+
+        super(Convolutional2DLayer, self).__init__(**kwargs)
 
         self.logger.debug("Creating convolutional layer {0}".format(self.name))
 
@@ -22,31 +22,30 @@ class ConvolutionalLayer(BaseLayer):
         self.w = kwargs["initializer"]["w"].create_shared()
         self.b = kwargs["initializer"]["b"].create_shared()
 
+        self.stride = kwargs.get("stride", (1, 1))
+        self.pool = kwargs.get("pool", (1, 1))
+
         # our activation function is the identity by default
         self.activation = BaseActivation()
 
         # setup convolutional parameters
         self.filter = kwargs["filter"]
-        self.stride = kwargs.get("stride", (1, 1))
-        self.stride = kwargs.get("pool", (1, 1))
+        self.n_filters = self.out_shape[0]
+        self.n_channels = self.in_shape[0]
+
+        self.filter_shape = [self.n_filters, self.n_channels, self.filter[0], self.filter[1]]
 
         self.logger.debug("Input shape {0} - Activation {1}".format(self.in_shape, self.activation))
         self.logger.debug("Filters {0} - Stride {1}".format(self.filter_shape, self.stride))
-        self.logger.debug("Output shape {0}".format(self.output_shape))
-
-        out_rows = (self.in_shape[1] - self.filter_shape[2] + 1)
-        out_cols = (self.in_shape[2] - self.filter_shape[3] + 1)
-
-        valid_rows = int(np.floor(np.ceil(out_rows * 1.0 / self.stride[0]) / self.pool[0]))
-        valid_cols = int(np.floor(np.ceil(out_cols * 1.0 / self.stride[1]) / self.pool[1]))
-
-        self.output_shape = np.array((self.filter_shape[0],
-                                      valid_rows,
-                                      valid_cols))
-
+        self.logger.debug("Output shape {0}".format(self.out_shape))
 
     def transform(self, x, mode='train'):
-
+        """
+        Convolve the input matrix
+        :param x: input
+        :param mode:
+        :return:
+        """
         conv2d_input = None
         conv_output = conv.conv2d(input=x,
                                   filters=self.w,
@@ -57,3 +56,26 @@ class ConvolutionalLayer(BaseLayer):
         pool = downsample.max_pool_2d(conv_output, ds=self.pool, ignore_border=True)
 
         return self.activation(pool + self.b.dimshuffle('x', 0, 'x', 'x'))
+
+    def get_weights(self):
+        """
+        Returns the weights
+        :return: vector w
+        """
+        return self.w.get_value()
+
+    def get_bias(self):
+        """
+        Returns the layer bias
+        :return: vector b
+        """
+        return self.b.get_value()
+
+    def get_parameters(self):
+        """
+        Returns a dictionary of the parameters
+        :return:
+        """
+        self.logger.debug("Getting parameters")
+        self.logger.debug("Are {0} and {1}".format(self.w.name, self.b.name))
+        return {self.w.name: self.w, self.b.name: self.b}
