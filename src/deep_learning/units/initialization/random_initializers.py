@@ -32,6 +32,7 @@ class FanInOutInitializer(RandomInitializer):
 
     def __init__(self, name, shape):
         self.logger.debug("Initializing {0} with shape {1}".format(name, shape))
+        # TODO check the formula
         bound = np.sqrt(6. / np.sum(shape))
         super(FanInOutInitializer, self).__init__(name, shape,
-                                                  scs.uniform(-bound, bound))
+                                                  scs.uniform(-bound, 2*bound))
