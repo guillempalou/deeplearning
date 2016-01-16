@@ -3,6 +3,8 @@ import scipy.stats as scs
 from numpy.testing import assert_raises, assert_almost_equal
 
 from deep_learning.factories.initializer_factory import create_initializer, ParametersInitializers
+from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer
+from deep_learning.units.activation.relu_activation import ReLuActivation
 
 
 def test_constant():
@@ -71,3 +73,23 @@ def test_faninout():
            [0.25908339, -0.66038139]]]
     assert_almost_equal(s.get_value(), gt)
 
+
+def test_softmax_factory():
+    layer = create_softmax_layer("layer", 3, 2, {"initializer": "constant", "value": 1})
+    assert layer.name == "layer"
+    assert layer.in_shape == 3
+    assert layer.out_shape == 2
+    assert_almost_equal(layer.get_weights(), np.ones((3, 2)))
+    assert_almost_equal(layer.get_bias(), np.ones(2))
+
+def test_hidden_factory():
+    layer = create_hidden_layer("layer", 3, 2, {"initializer": "constant", "value": 1}, activation=ReLuActivation())
+    assert layer.name == "layer"
+    assert layer.in_shape == 3
+    assert layer.out_shape == 2
+    assert isinstance(layer.activation, ReLuActivation)
+    assert_almost_equal(layer.get_weights(), np.ones((3, 2)))
+    assert_almost_equal(layer.get_bias(), np.ones(2))
+
+def test_convolutional_factory():
+    pass
