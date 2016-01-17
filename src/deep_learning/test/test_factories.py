@@ -3,7 +3,8 @@ import scipy.stats as scs
 from numpy.testing import assert_raises, assert_almost_equal
 
 from deep_learning.factories.initializer_factory import create_initializer, ParametersInitializers
-from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer
+from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer, \
+    create_convolutional_2d_layer
 from deep_learning.units.activation.relu_activation import ReLuActivation
 
 
@@ -92,4 +93,14 @@ def test_hidden_factory():
     assert_almost_equal(layer.get_bias(), np.ones(2))
 
 def test_convolutional_factory():
-    pass
+    np.random.seed(0)
+    layer = create_convolutional_2d_layer("layer", (2, 5, 5), 3, (3, 3),
+                                          {"initializer": "faninout"},
+                                          activation=ReLuActivation())
+    assert layer.in_shape == (2, 5, 5)
+    assert layer.out_shape == (3, 3, 3)
+    assert isinstance(layer.activation, ReLuActivation)
+    print(layer.get_bias())
+    print(layer.get_weights())
+
+test_convolutional_factory()

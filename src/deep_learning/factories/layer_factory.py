@@ -1,10 +1,12 @@
 import logging
 
 from deep_learning.factories.initializer_factory import create_initializer
+from deep_learning.layers.convolutional import Convolutional2DLayer
 from deep_learning.layers.hidden_layer import HiddenLayer
 from deep_learning.layers.softmax_layer import SoftMaxLayer
 
 logger = logging.getLogger("layer_factory")
+
 
 def create_softmax_layer(name, input_units, output_units, initializer_types):
     """
@@ -13,16 +15,17 @@ def create_softmax_layer(name, input_units, output_units, initializer_types):
     :param input_units: number
     :param output_units: number
     :param initializer_types: initializer dictionary
-    :return:
+    :return: softmax layer
     """
     assert isinstance(input_units, int), "Input units needs to be an int"
     assert isinstance(output_units, int), "Output units needs to be an int"
     assert input_units >= 1, "Input units needs to be positive"
     assert output_units >= 1, "Output units needs to be positive"
 
-    initializers = _create_weight_and_bias_inits(name, input_units, output_units, initializer_types)
+    initializers = _create_weight_and_bias_inits(name, (input_units, output_units), output_units, initializer_types)
 
     return SoftMaxLayer(name=name, in_shape=input_units, out_shape=output_units, initializer=initializers)
+
 
 def create_hidden_layer(name, input_units, output_units, initializer_types, activation):
     """
@@ -32,25 +35,48 @@ def create_hidden_layer(name, input_units, output_units, initializer_types, acti
     :param output_units: number
     :param initializer_types: initializer dictionary
     :param layer_params: layer additional parameters
-    :return:
+    :return: hidden layer
     """
     assert isinstance(input_units, int), "Input units needs to be an int"
     assert isinstance(output_units, int), "Output units needs to be an int"
     assert input_units >= 1, "Input units needs to be positive"
     assert output_units >= 1, "Output units needs to be positive"
 
-    initializers = _create_weight_and_bias_inits(name, input_units, output_units, initializer_types)
+    initializers = _create_weight_and_bias_inits(name, (input_units, output_units), output_units, initializer_types)
 
     return HiddenLayer(name=name,
                        in_shape=input_units, out_shape=output_units,
                        initializer=initializers, activation=activation)
 
-def create_convolutional_layer():
-    pass
 
+def create_convolutional_2d_layer(name, input_shape, n_filters, filter_shape, initializer_types, **kwargs):
 
-def _create_weight_and_bias_inits(name, input_units, output_units, initializer_types):
+    """
+    Creates a 2D convolutional layer given input and filter parameters
+    :param name: name of the layer
+    :param input_shape: input shape (channels, rows, cols)
+    :param n_filters: number of output filters
+    :param filter_shape: (rows, cols)
+    :param initializer_types: initializer dictionary
+    :param kwargs: layer additional arguments (activation, ...)
+    :return: convolutional layer
+    """
+    output_shape = (n_filters,
+                    input_shape[1] - filter_shape[0] + 1,
+                    input_shape[2] - filter_shape[1] + 1)
 
+    w_shape = (n_filters, input_shape[0]) + tuple(filter_shape)
+    b_shape = n_filters
+
+    initializers = _create_weight_and_bias_inits(name, w_shape, b_shape, initializer_types)
+    return Convolutional2DLayer(name=name,
+                                in_shape=input_shape,
+                                out_shape=output_shape,
+                                filter=filter_shape,
+                                initializer=initializers,
+                                **kwargs)
+
+def _create_weight_and_bias_inits(name, w_shape, b_shape, initializer_types):
     initializers = {}
     # check if the dictionary contains a key "initializer"
     # if it does, we assume the initialization is the same
@@ -64,8 +90,8 @@ def _create_weight_and_bias_inits(name, input_units, output_units, initializer_t
         initializers = initializer_types
 
     initializer = {
-        "w": create_initializer(name + "_w", (input_units, output_units), **initializers["w"]),
-        "b": create_initializer(name + "_b", output_units, **initializers["b"])
+        "w": create_initializer(name + "_w", w_shape, **initializers["w"]),
+        "b": create_initializer(name + "_b", b_shape, **initializers["b"])
     }
 
     return initializer

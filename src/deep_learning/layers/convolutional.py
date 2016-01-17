@@ -26,7 +26,7 @@ class Convolutional2DLayer(BaseLayer):
         self.pool = kwargs.get("pool", (1, 1))
 
         # our activation function is the identity by default
-        self.activation = BaseActivation()
+        self.activation = kwargs.get("activation", BaseActivation())
 
         # setup convolutional parameters
         self.filter = kwargs["filter"]
@@ -46,12 +46,11 @@ class Convolutional2DLayer(BaseLayer):
         :param mode:
         :return:
         """
-        conv2d_input = None
         conv_output = conv.conv2d(input=x,
                                   filters=self.w,
                                   subsample=self.stride,
                                   filter_shape=self.filter_shape,
-                                  image_shape=conv2d_input)
+                                  image_shape=self.in_shape)
 
         pool = downsample.max_pool_2d(conv_output, ds=self.pool, ignore_border=True)
 

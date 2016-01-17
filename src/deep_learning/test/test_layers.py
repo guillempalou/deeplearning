@@ -71,7 +71,7 @@ def test_convolutional():
         "name": "test_hidden",
         "in_shape": (n_in_channels, n_in_rows, n_in_cols),
         "out_shape": (n_out_channels, n_out_rows, n_out_cols),
-        "filter": (filter_rows, filter_rows),
+        "filter": (filter_rows, filter_cols),
         "initializer": {"w": ConstantInitializer("w", (n_out_channels, n_in_channels, filter_rows, filter_cols), 1),
                         "b": ConstantInitializer("b", n_out_channels, 1)}
     }
