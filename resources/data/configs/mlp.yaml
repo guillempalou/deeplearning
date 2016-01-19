@@ -1,0 +1,12 @@
+---
+net:
+  name: MLP
+  layer:
+    name: hidden
+    input: 10
+    activation: relu
+
+  layer:
+    name: output
+    output: 2
+    type: softmax

@@ -50,7 +50,7 @@ class Convolutional2DLayer(BaseLayer):
                                   filters=self.w,
                                   subsample=self.stride,
                                   filter_shape=self.filter_shape,
-                                  image_shape=self.in_shape)
+                                  image_shape=None)
 
         pool = downsample.max_pool_2d(conv_output, ds=self.pool, ignore_border=True)
 

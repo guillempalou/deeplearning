@@ -5,6 +5,7 @@ from numpy.testing import assert_raises, assert_almost_equal
 from deep_learning.factories.initializer_factory import create_initializer, ParametersInitializers
 from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer, \
     create_convolutional_2d_layer
+from deep_learning.factories.net_factory import create_forward_net
 from deep_learning.units.activation.relu_activation import ReLuActivation
 
 
@@ -54,7 +55,7 @@ def test_faninout():
     np.random.seed(0)
     init = create_initializer("a", 3, initializer=ParametersInitializers.FanInOutInitializer)
     s = init.create_shared()
-    assert_almost_equal(s.get_value(), [0.13806544, 0.60864744, 0.29065872])
+    assert_almost_equal(s.get_value(), [0.1195682, 0.5271041, 0.2517178])
 
     init = create_initializer("a", (3, 4), initializer=ParametersInitializers.FanInOutInitializer)
     s = init.create_shared()
@@ -65,13 +66,13 @@ def test_faninout():
 
     init = create_initializer("a", np.array((2, 3, 2)), initializer=ParametersInitializers.FanInOutInitializer)
     s = init.create_shared()
-    gt = [[[-0.76448799, -0.8883829],
-           [0.61589228, 0.51504622],
-           [0.68512937, 0.88622896]],
+    gt = [[[-0.63961654, -0.74327446],
+           [0.51529245, 0.43091859],
+           [0.57322036, 0.74147235]],
 
-          [[0.55393402, -0.07132636],
-           [0.5194391, -0.70681842],
-           [0.25908339, -0.66038139]]]
+          [[0.46345445, -0.05967592],
+           [0.43459393, -0.59136672],
+           [0.21676471, -0.55251471]]]
     assert_almost_equal(s.get_value(), gt)
 
 
@@ -83,6 +84,7 @@ def test_softmax_factory():
     assert_almost_equal(layer.get_weights(), np.ones((3, 2)))
     assert_almost_equal(layer.get_bias(), np.ones(2))
 
+
 def test_hidden_factory():
     layer = create_hidden_layer("layer", 3, 2, {"initializer": "constant", "value": 1}, activation=ReLuActivation())
     assert layer.name == "layer"
@@ -92,6 +94,7 @@ def test_hidden_factory():
     assert_almost_equal(layer.get_weights(), np.ones((3, 2)))
     assert_almost_equal(layer.get_bias(), np.ones(2))
 
+
 def test_convolutional_factory():
     np.random.seed(0)
     layer = create_convolutional_2d_layer("layer", (2, 5, 5), 3, (3, 3),
@@ -100,7 +103,43 @@ def test_convolutional_factory():
     assert layer.in_shape == (2, 5, 5)
     assert layer.out_shape == (3, 3, 3)
     assert isinstance(layer.activation, ReLuActivation)
-    print(layer.get_bias())
-    print(layer.get_weights())
 
-test_convolutional_factory()
+    b_gt = [-0.7131034, -0.82961886, 0.37503727]
+
+    w_gt = [[[[0.03564834, 0.15715209, 0.07504776],
+              [0.03277804, -0.05575465, 0.106546],
+              [-0.04557986, 0.28611055, 0.3386114]],
+             [[-0.08512228, 0.21304585, 0.02110187],
+              [0.04969272, 0.31081184, -0.31327097],
+              [-0.30151813, -0.35038294, 0.24291119]]],
+            [[[0.20313697, 0.27021867, 0.34953342],
+              [0.21847453, -0.0281315, 0.20486954],
+              [-0.27877294, 0.10218387, -0.26045793]],
+             [[0.32474026, 0.01595576, -0.06232211],
+              [-0.17194427, 0.20027197, -0.03202327],
+              [0.04997709, -0.35142624, 0.08590882]]],
+            [[[0.08186314, 0.08539652, 0.32406778],
+              [0.13278277, -0.10260092, -0.04598536],
+              [0.14432942, -0.32116591, 0.12178919]],
+             [[0.12461628, -0.21150667, -0.27099392],
+              [-0.13479207, -0.09953158, 0.05126447],
+              [-0.04483911, 0.35665782, -0.29062538]]]]
+
+    assert_almost_equal(layer.get_weights(), w_gt)
+    assert_almost_equal(layer.get_bias(), b_gt)
+
+
+def test_net_factory_list():
+    hidden = create_hidden_layer("hidden", 10, 5,
+                                 {"initializer": "constant", "value": 1},
+                                 activation=ReLuActivation())
+
+    output = create_softmax_layer("output", 5, 2, {"initializer": "constant", "value": 1})
+    net = create_forward_net("net", [hidden, output])
+    print(net)
+
+def test_net_factory_graph():
+    pass
+
+
+test_net_factory_list()

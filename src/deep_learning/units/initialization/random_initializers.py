@@ -32,10 +32,12 @@ class FanInOutInitializer(RandomInitializer):
 
     def __init__(self, name, shape):
         self.logger.debug("Initializing {0} with shape {1}".format(name, shape))
-        # the shape is a 4D tensor,
-        fan_in = shape[0] if shape.ndim == 2 else np.prod(shape[1:])
-        fan_out = shape[1] if shape.ndim == 2 else shape[0] * np.prod(shape[2:])
-        # TODO check the formula
+        if isinstance(shape, int):
+            fan_in = shape
+            fan_out = shape
+        else:
+            fan_in = shape[0] if len(shape) == 2 else np.prod(shape[1:])
+            fan_out = shape[1] if len(shape) == 2 else shape[0] * np.prod(shape[2:])
         bound = np.sqrt(6. / (fan_in + fan_out))
         super(FanInOutInitializer, self).__init__(name, shape,
                                                   scs.uniform(-bound, 2*bound))
