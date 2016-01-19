@@ -4,6 +4,7 @@ net:
   layer:
     name: hidden
     input: 10
+    output: 5
     activation: relu
 
   layer:

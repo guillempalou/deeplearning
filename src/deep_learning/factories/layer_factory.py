@@ -7,6 +7,44 @@ from deep_learning.layers.softmax_layer import SoftMaxLayer
 
 logger = logging.getLogger("layer_factory")
 
+# TODO add logging
+# TODO all string constant move to proper definitions
+# TODO add docstrings
+
+def create_layer_from_dict(layer_definition):
+
+    name = layer_definition["name"]
+    input_shape = layer_definition["input"]
+    output_shape = layer_definition["output"]
+
+    initialization = layer_definition.get("initialization", "faninout")
+
+    type = layer_definition.get("type", "hidden")
+
+    activation = layer_definition.get("activation", None)
+
+    initializers = {}
+    if initialization is not None:
+        # TODO support more complex activations
+        if initialization == "faninout":
+            pass
+        elif initialization == "xavier":
+            # TODO support xavier
+            pass
+        else:
+            # parse initialization
+            pass
+
+
+    if type == "softmax":
+        return create_softmax_layer(name, input_shape, output_shape, initializers)
+    elif type == "hidden":
+        return create_hidden_layer(name, input_shape, output_shape, initializers, activation=activation)
+    elif type == "convolutional":
+        pass
+    else:
+        #TODO support custom layers
+        pass
 
 def create_softmax_layer(name, input_units, output_units, initializer_types):
     """
