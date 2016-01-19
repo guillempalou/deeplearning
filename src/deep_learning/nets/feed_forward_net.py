@@ -70,4 +70,5 @@ class FeedForwardNet(BaseNet):
 
         self.logger.debug("Transformation setup completed")
 
+        # TODO support more than one output
         return self.outputs[self.order[-1]]

@@ -1,4 +1,5 @@
 import numpy as np
+import networkx as nx
 import scipy.stats as scs
 from numpy.testing import assert_raises, assert_almost_equal
 
@@ -136,10 +137,24 @@ def test_net_factory_list():
 
     output = create_softmax_layer("output", 5, 2, {"initializer": "constant", "value": 1})
     net = create_forward_net("net", [hidden, output])
-    print(net)
+    assert net.in_shape == 10
+    assert net.out_shape == 2
 
 def test_net_factory_graph():
-    pass
+    hidden = create_hidden_layer("hidden", 10, 5,
+                                 {"initializer": "constant", "value": 1},
+                                 activation=ReLuActivation())
+
+    output = create_softmax_layer("output", 5, 2, {"initializer": "constant", "value": 1})
+
+    g = nx.DiGraph()
+    g.add_nodes_from([hidden, output])
+    g.add_edge(hidden, output)
+
+    net = create_forward_net("net", g)
+    assert net.in_shape == 10
+    assert net.out_shape == 2
 
 
-test_net_factory_list()
+
+test_net_factory_graph()
