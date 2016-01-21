@@ -1,25 +1,30 @@
+import logging
+import os
+
 import numpy as np
 import networkx as nx
 import scipy.stats as scs
+import yaml
 from numpy.testing import assert_raises, assert_almost_equal
 
-from deep_learning.factories.initializer_factory import create_initializer, ParametersInitializers
+from deep_learning.factories.initializer_factory import create_initializer, InitializerType
 from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer, \
     create_convolutional_2d_layer
-from deep_learning.factories.net_factory import create_forward_net
+from deep_learning.factories.net_factory import create_forward_net, create_forward_net_from_dict
+from deep_learning.test.test_data_utils import test_data_dir
 from deep_learning.units.activation.relu_activation import ReLuActivation
 
 
 def test_constant():
-    init = create_initializer("a", 3, initializer=ParametersInitializers.ConstantInitializer, value=1)
+    init = create_initializer("a", 3, initializer=InitializerType.Constant, value=1)
     s = init.create_shared()
     assert_almost_equal(s.get_value(), [1, 1, 1])
 
-    init = create_initializer("a", (3, 4), initializer=ParametersInitializers.ConstantInitializer, value=2)
+    init = create_initializer("a", (3, 4), initializer=InitializerType.Constant, value=2)
     s = init.create_shared()
     assert_almost_equal(s.get_value(), 2 * np.ones((3, 4)))
 
-    init = create_initializer("a", np.array((2, 3, 2)), initializer=ParametersInitializers.ConstantInitializer, value=3)
+    init = create_initializer("a", np.array((2, 3, 2)), initializer=InitializerType.Constant, value=3)
     s = init.create_shared()
     assert_almost_equal(s.get_value(), 3 * np.ones((2, 3, 2)))
 
@@ -27,18 +32,18 @@ def test_constant():
 def test_random():
     np.random.seed(0)
     pdf = scs.uniform(0, 1)
-    init = create_initializer("a", 3, initializer=ParametersInitializers.RandomInitializer, distribution=pdf)
+    init = create_initializer("a", 3, initializer=InitializerType.Random, distribution=pdf)
     s = init.create_shared()
     assert_almost_equal(s.get_value(), [0.5488135, 0.71518937, 0.60276338])
 
-    init = create_initializer("a", (3, 4), initializer=ParametersInitializers.RandomInitializer, distribution=pdf)
+    init = create_initializer("a", (3, 4), initializer=InitializerType.Random, distribution=pdf)
     s = init.create_shared()
     gt = [[0.54488318, 0.4236548, 0.64589411, 0.43758721],
           [0.891773, 0.96366276, 0.38344152, 0.79172504],
           [0.52889492, 0.56804456, 0.92559664, 0.07103606]]
     assert_almost_equal(s.get_value(), gt)
 
-    init = create_initializer("a", np.array((2, 3, 2)), initializer=ParametersInitializers.RandomInitializer,
+    init = create_initializer("a", np.array((2, 3, 2)), initializer=InitializerType.Random,
                               distribution=pdf)
     s = init.create_shared()
     gt = [[[0.0871293, 0.0202184],
@@ -54,18 +59,18 @@ def test_random():
 
 def test_faninout():
     np.random.seed(0)
-    init = create_initializer("a", 3, initializer=ParametersInitializers.FanInOutInitializer)
+    init = create_initializer("a", 3, initializer=InitializerType.FanInOut)
     s = init.create_shared()
     assert_almost_equal(s.get_value(), [0.1195682, 0.5271041, 0.2517178])
 
-    init = create_initializer("a", (3, 4), initializer=ParametersInitializers.FanInOutInitializer)
+    init = create_initializer("a", (3, 4), initializer=InitializerType.FanInOut)
     s = init.create_shared()
     gt = [[0.08310751, -0.14136384, 0.2701434, -0.11556603],
           [0.72542264, 0.85853661, -0.21582437, 0.54016981],
           [0.05350299, 0.12599404, 0.78805184, -0.79428688]]
     assert_almost_equal(s.get_value(), gt)
 
-    init = create_initializer("a", np.array((2, 3, 2)), initializer=ParametersInitializers.FanInOutInitializer)
+    init = create_initializer("a", np.array((2, 3, 2)), initializer=InitializerType.FanInOut)
     s = init.create_shared()
     gt = [[[-0.63961654, -0.74327446],
            [0.51529245, 0.43091859],
@@ -140,6 +145,7 @@ def test_net_factory_list():
     assert net.in_shape == 10
     assert net.out_shape == 2
 
+
 def test_net_factory_graph():
     hidden = create_hidden_layer("hidden", 10, 5,
                                  {"initializer": "constant", "value": 1},
@@ -156,5 +162,11 @@ def test_net_factory_graph():
     assert net.out_shape == 2
 
 
+def test_net_from_yaml():
+    net_definition = yaml.load(open(os.path.join(test_data_dir, "test_network.yaml")))
+    name = "TestNet"
+    net = create_forward_net_from_dict(name, net_definition[name])
+    print(net)
 
-test_net_factory_graph()
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+test_net_from_yaml()

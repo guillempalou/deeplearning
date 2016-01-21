@@ -7,5 +7,5 @@ pushd $DIR/../../src/
 echo `pwd`
 export PYTHONPATH=$PYTHONPATH:`pwd`
 # configure spark logging to WARN only
-py.test -s -v deep_learning/test
+py.test -v deep_learning/test
 popd

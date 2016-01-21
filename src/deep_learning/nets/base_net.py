@@ -138,7 +138,7 @@ class BaseNet(object):
         Return the definition of the network
         :return: list of definitions
         """
-        s = "Network: {0}\n".format(self.name)
+        s = "Network: {0}\n\t".format(self.name)
 
         return s + "\n\t".join([str(layer) for layer in self.layers.values()])
 

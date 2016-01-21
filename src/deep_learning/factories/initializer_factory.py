@@ -6,10 +6,10 @@ from deep_learning.units.initialization.random_initializers import FanInOutIniti
 from deep_learning.units.initialization.random_initializers import RandomInitializer
 
 
-class ParametersInitializers:
-    ConstantInitializer = "constant"
-    RandomInitializer = "random"
-    FanInOutInitializer = "faninout"
+class InitializerType:
+    Constant = "constant"
+    Random = "random"
+    FanInOut = "faninout"
 
 
 def create_constant_initializer(name, shape, **kwargs):
@@ -47,9 +47,9 @@ def create_faninout_initializer(name, shape, **kwargs):
 
 # map that translates the type of initializer to the function that needs to be called
 param_to_init = {
-    ParametersInitializers.ConstantInitializer: create_constant_initializer,
-    ParametersInitializers.RandomInitializer: create_random_initializer,
-    ParametersInitializers.FanInOutInitializer: create_faninout_initializer
+    InitializerType.Constant: create_constant_initializer,
+    InitializerType.Random: create_random_initializer,
+    InitializerType.FanInOut: create_faninout_initializer
 }
 
 

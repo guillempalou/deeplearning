@@ -8,24 +8,25 @@ from deep_learning.nets.feed_forward_net import FeedForwardNet
 logger = logging.getLogger("NetFactory")
 
 
-def create_forward_net_from_dict(net_definition):
+def create_forward_net_from_dict(name, net_definition):
     """
     Creates a Deep Net using a specifications dictionary
     :param net_definition: dict of layer specs
     :return: net
     """
-    name = net_definition["name"]
     layer_graph = nx.DiGraph()
 
     previous_layer = None
-    for layer_definition in net_definition:
+    for layer_name, layer_definition in net_definition.items():
 
+        layer_definition["name"] = layer_name
         if previous_layer is not None:
             input = previous_layer.out_shape
             layer_definition["input"] = input
 
         layer = create_layer_from_dict(layer_definition)
-        layer_graph.add_edge(previous_layer, layer)
+        if previous_layer is not None:
+            layer_graph.add_edge(previous_layer, layer)
         layer_graph.add_node(layer)
         previous_layer = layer
 

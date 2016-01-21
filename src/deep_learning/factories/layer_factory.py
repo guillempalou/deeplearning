@@ -1,49 +1,57 @@
 import logging
 
-from deep_learning.factories.initializer_factory import create_initializer
+from deep_learning.factories.initializer_factory import create_initializer, InitializerType
 from deep_learning.layers.convolutional import Convolutional2DLayer
 from deep_learning.layers.hidden_layer import HiddenLayer
 from deep_learning.layers.softmax_layer import SoftMaxLayer
 
 logger = logging.getLogger("layer_factory")
 
+
 # TODO add logging
 # TODO all string constant move to proper definitions
 # TODO add docstrings
 
 def create_layer_from_dict(layer_definition):
-
+    """
+    Creates a layer from a dictionary
+    :param layer_definition: dict
+    :return: layer
+    """
     name = layer_definition["name"]
     input_shape = layer_definition["input"]
-    output_shape = layer_definition["output"]
-
-    initialization = layer_definition.get("initialization", "faninout")
 
     type = layer_definition.get("type", "hidden")
 
     activation = layer_definition.get("activation", None)
 
-    initializers = {}
-    if initialization is not None:
-        # TODO support more complex activations
-        if initialization == "faninout":
-            pass
-        elif initialization == "xavier":
-            # TODO support xavier
-            pass
-        else:
-            # parse initialization
-            pass
+    initializers = layer_definition.get("initialization", {"initializer": InitializerType.FanInOut})
 
-
+    # create a layer according to the type
     if type == "softmax":
-        return create_softmax_layer(name, input_shape, output_shape, initializers)
+        output_shape = layer_definition["output"]
+        return create_softmax_layer(name,
+                                    input_shape,
+                                    output_shape,
+                                    initializers)
     elif type == "hidden":
-        return create_hidden_layer(name, input_shape, output_shape, initializers, activation=activation)
+        output_shape = layer_definition["output"]
+        return create_hidden_layer(name,
+                                   input_shape,
+                                   output_shape,
+                                   initializers,
+                                   activation=activation)
     elif type == "convolutional":
-        pass
+        n_filters = layer_definition["n_filters"]
+        filter_shape = layer_definition["filter"]
+        return create_convolutional_2d_layer(name,
+                                             input_shape,
+                                             n_filters,
+                                             filter_shape=filter_shape,
+                                             initializer_types=initializers,
+                                             activation=activation)
     else:
-        #TODO support custom layers
+        # TODO support custom layers
         pass
 
 def create_softmax_layer(name, input_units, output_units, initializer_types):
@@ -88,7 +96,6 @@ def create_hidden_layer(name, input_units, output_units, initializer_types, acti
 
 
 def create_convolutional_2d_layer(name, input_shape, n_filters, filter_shape, initializer_types, **kwargs):
-
     """
     Creates a 2D convolutional layer given input and filter parameters
     :param name: name of the layer
@@ -113,6 +120,7 @@ def create_convolutional_2d_layer(name, input_shape, n_filters, filter_shape, in
                                 filter=filter_shape,
                                 initializer=initializers,
                                 **kwargs)
+
 
 def _create_weight_and_bias_inits(name, w_shape, b_shape, initializer_types):
     initializers = {}
