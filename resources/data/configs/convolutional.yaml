@@ -1,11 +1,11 @@
 ---
-TestNet:
+ConvNet:
   - name: Convolutional1
     type: convolutional
-    input: [3, 10, 10]
+    input: [3, 256, 256]
     n_filters: 3
     filter: [3,3]
   - name: Convolutional2
     type: convolutional
-    n_filters: 5
+    n_filters: 3
     filter: [3, 3]

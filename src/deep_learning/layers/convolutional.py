@@ -56,6 +56,18 @@ class Convolutional2DLayer(BaseLayer):
 
         return self.activation(pool + self.b.dimshuffle('x', 0, 'x', 'x'))
 
+    def input_variable(self):
+        """
+        returns theano variable type
+        """
+        return T.tensor4
+
+    def output_variable(self):
+        """
+        returns theano variable type
+        """
+        return T.tensor4
+
     def get_weights(self):
         """
         Returns the weights

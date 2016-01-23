@@ -5,6 +5,7 @@ from deep_learning.factories.initializer_factory import create_initializer, Init
 from deep_learning.layers.convolutional import Convolutional2DLayer
 from deep_learning.layers.hidden_layer import HiddenLayer
 from deep_learning.layers.softmax_layer import SoftMaxLayer
+from deep_learning.units.activation.base_activation import BaseActivation
 
 logger = logging.getLogger("layer_factory")
 
@@ -22,7 +23,7 @@ def create_layer_from_dict(layer_definition):
 
     type = layer_definition.get("type", "hidden")
 
-    activation = layer_definition.get("activation", None)
+    activation = layer_definition.get("activation", BaseActivation())
 
     initializers = layer_definition.get("initialization", {"initializer": InitializerType.FanInOut})
 

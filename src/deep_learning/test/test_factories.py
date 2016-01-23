@@ -1,20 +1,19 @@
-import logging
 import os
 
-import numpy as np
 import networkx as nx
+import numpy as np
 import scipy.stats as scs
 import yaml
-from numpy.testing import assert_raises, assert_almost_equal
+from numpy.testing import assert_almost_equal
 
 from deep_learning.factories.initializer_factory import create_initializer, InitializerType
 from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer, \
     create_convolutional_2d_layer
 from deep_learning.factories.net_factory import create_forward_net, create_forward_net_from_dict
+from deep_learning.io.data_utils import test_data_dir
 from deep_learning.layers.convolutional import Convolutional2DLayer
 from deep_learning.layers.hidden_layer import HiddenLayer
 from deep_learning.layers.softmax_layer import SoftMaxLayer
-from deep_learning.test.test_data_utils import test_data_dir
 from deep_learning.units.activation.relu_activation import ReLuActivation
 
 

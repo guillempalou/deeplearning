@@ -14,6 +14,18 @@ class BaseLayer(object):
         """
         raise NotImplementedError("No method defined")
 
+    def input_variable(self):
+        """
+        returns theano variable type
+        """
+        raise NotImplementedError("Each layer should define the input")
+
+    def output_variable(self):
+        """
+        returns theano variable type
+        """
+        raise NotImplementedError("Each layer should define the output")
+
     def get_parameters(self):
         """
         Get a dictionary with the shared variables composing the layer

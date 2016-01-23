@@ -30,6 +30,18 @@ class LinearUnitLayer(BaseLayer):
         """
         return self.activation(T.dot(x, self.w) + self.b, **kwargs)
 
+    def input_variable(self):
+        """
+        returns theano variable type
+        """
+        return T.matrix
+
+    def output_variable(self):
+        """
+        returns theano variable type
+        """
+        return T.matrix
+
     def get_weights(self):
         """
         Returns the weights

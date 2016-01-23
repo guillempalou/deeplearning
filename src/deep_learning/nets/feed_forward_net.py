@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 import networkx as nx
 import theano
@@ -27,6 +28,10 @@ class FeedForwardNet(BaseNet):
         """
         super(FeedForwardNet, self).create_net(net_graph)
         self.order = nx.topological_sort(net_graph)
+
+        self.X = self.order[0].input_variable()("X_".format(self.name), 'float32')
+        self.Y = self.order[-1].output_variable()("Y_".format(self.name), 'float32')
+
         self.logger.debug("Order of the layers is: {0}".format(self.order))
 
     def transform(self, x, **kwargs):

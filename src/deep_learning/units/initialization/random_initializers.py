@@ -21,7 +21,9 @@ class RandomInitializer(BaseInitializer):
         self.shape = shape
 
     def create_shared(self, **kwargs):
-        return theano.shared(self.distribution.rvs(self.shape), name=self.name, **kwargs)
+        return theano.shared(self.distribution.rvs(self.shape).astype(np.float32),
+                             name=self.name,
+                             **kwargs)
 
 
 class FanInOutInitializer(RandomInitializer):
