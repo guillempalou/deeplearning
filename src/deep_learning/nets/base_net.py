@@ -1,5 +1,5 @@
 import logging
-import networkx as nx
+
 import theano
 
 
@@ -132,15 +132,3 @@ class BaseNet(object):
             self.add_layer(layer)
 
         self.inputs = {layer: self.topology.predecessors(layer) for layer in self.layers.values()}
-
-    def definition(self):
-        """
-        Return the definition of the network
-        :return: list of definitions
-        """
-        s = "Network: {0}\n\t".format(self.name)
-
-        return s + "\n\t".join([str(layer) for layer in self.layers.values()])
-
-    def __str__(self):
-        return self.definition()

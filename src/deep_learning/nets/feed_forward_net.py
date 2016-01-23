@@ -13,7 +13,7 @@ class FeedForwardNet(BaseNet):
     We can specify a graph and the algorithm will infer the net function
     based on the graph topology
     """
-    logger = logging.getLogger(__name__ + "." + "FeedForwardNet")
+    logger = logging.getLogger("FeedForwardNet")
 
     def __init__(self, **kwargs):
         super(FeedForwardNet, self).__init__(**kwargs)
@@ -72,3 +72,15 @@ class FeedForwardNet(BaseNet):
 
         # TODO support more than one output
         return self.outputs[self.order[-1]]
+
+    def definition(self):
+        """
+        Return the definition of the network
+        :return: list of definitions
+        """
+        s = "Network: {0}\n\t".format(self.name)
+
+        return s + "\n\t".join([str(layer) for layer in self.order])
+
+    def __str__(self):
+        return self.definition()

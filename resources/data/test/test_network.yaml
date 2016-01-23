@@ -1,17 +1,17 @@
 ---
 TestNet:
-  Convolutional1:
+  - name: Convolutional1
     type: convolutional
     input: [3, 10, 10]
     n_filters: 3
     filter: [3,3]
-  Convolutional2:
+  - name: Convolutional2
     type: convolutional
-    n_filter: 5
+    n_filters: 5
     filter: [3, 3]
-  HiddenLayer:
+  - name: HiddenLayer
     output: 5
     activation: relu
-  OutputLayer:
+  - name: OutputLayer
     output: 2
     type: softmax

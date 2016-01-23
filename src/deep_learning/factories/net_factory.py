@@ -17,9 +17,8 @@ def create_forward_net_from_dict(name, net_definition):
     layer_graph = nx.DiGraph()
 
     previous_layer = None
-    for layer_name, layer_definition in net_definition.items():
+    for layer_definition in net_definition:
 
-        layer_definition["name"] = layer_name
         if previous_layer is not None:
             input = previous_layer.out_shape
             layer_definition["input"] = input

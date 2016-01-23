@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 
 from deep_learning.factories.initializer_factory import create_initializer, InitializerType
 from deep_learning.layers.convolutional import Convolutional2DLayer
@@ -7,8 +8,6 @@ from deep_learning.layers.softmax_layer import SoftMaxLayer
 
 logger = logging.getLogger("layer_factory")
 
-
-# TODO add logging
 # TODO all string constant move to proper definitions
 # TODO add docstrings
 
@@ -30,12 +29,19 @@ def create_layer_from_dict(layer_definition):
     # create a layer according to the type
     if type == "softmax":
         output_shape = layer_definition["output"]
+
+        if isinstance(input_shape, (tuple, list)):
+            input_shape = np.prod(input_shape)
+
         return create_softmax_layer(name,
                                     input_shape,
                                     output_shape,
                                     initializers)
     elif type == "hidden":
         output_shape = layer_definition["output"]
+        if isinstance(input_shape, (tuple, list)):
+            input_shape = np.prod(input_shape)
+
         return create_hidden_layer(name,
                                    input_shape,
                                    output_shape,
