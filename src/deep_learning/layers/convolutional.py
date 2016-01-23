@@ -33,7 +33,7 @@ class Convolutional2DLayer(BaseLayer):
         self.n_filters = self.out_shape[0]
         self.n_channels = self.in_shape[0]
 
-        self.filter_shape = [self.n_filters, self.n_channels, self.filter[0], self.filter[1]]
+        self.filter_shape = (self.n_filters, self.n_channels, self.filter[0], self.filter[1])
 
         self.logger.debug("Input shape {0} - Activation {1}".format(self.in_shape, self.activation))
         self.logger.debug("Filters {0} - Stride {1}".format(self.filter_shape, self.stride))

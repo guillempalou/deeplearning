@@ -11,6 +11,9 @@ from deep_learning.factories.initializer_factory import create_initializer, Init
 from deep_learning.factories.layer_factory import create_softmax_layer, create_hidden_layer, \
     create_convolutional_2d_layer
 from deep_learning.factories.net_factory import create_forward_net, create_forward_net_from_dict
+from deep_learning.layers.convolutional import Convolutional2DLayer
+from deep_learning.layers.hidden_layer import HiddenLayer
+from deep_learning.layers.softmax_layer import SoftMaxLayer
 from deep_learning.test.test_data_utils import test_data_dir
 from deep_learning.units.activation.relu_activation import ReLuActivation
 
@@ -166,7 +169,20 @@ def test_net_from_yaml():
     net_definition = yaml.load(open(os.path.join(test_data_dir, "test_network.yaml")))
     name = "TestNet"
     net = create_forward_net_from_dict(name, net_definition[name])
-    print(net)
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
-test_net_from_yaml()
+    assert isinstance(net.order[0], Convolutional2DLayer)
+    assert net.order[0].in_shape == (3, 10, 10)
+    assert net.order[0].out_shape == (3, 8, 8)
+
+    assert isinstance(net.order[1], Convolutional2DLayer)
+    assert net.order[1].in_shape == net.order[0].out_shape
+    assert net.order[1].out_shape == (5, 6, 6)
+
+    assert isinstance(net.order[2], HiddenLayer)
+    assert net.order[2].in_shape == np.prod(net.order[1].out_shape)
+    assert net.order[2].out_shape == 5
+
+    assert isinstance(net.order[3], SoftMaxLayer)
+    assert net.order[3].in_shape == net.order[2].out_shape
+    assert net.order[3].out_shape == 2
+

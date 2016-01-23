@@ -132,3 +132,4 @@ class BaseNet(object):
             self.add_layer(layer)
 
         self.inputs = {layer: self.topology.predecessors(layer) for layer in self.layers.values()}
+

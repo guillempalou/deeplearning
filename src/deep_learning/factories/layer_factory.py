@@ -51,7 +51,7 @@ def create_layer_from_dict(layer_definition):
         n_filters = layer_definition["n_filters"]
         filter_shape = layer_definition["filter"]
         return create_convolutional_2d_layer(name,
-                                             input_shape,
+                                             tuple(input_shape),
                                              n_filters,
                                              filter_shape=filter_shape,
                                              initializer_types=initializers,
