@@ -29,11 +29,6 @@ class BaseNet(object):
         # useful to compute dependencies
         self.inputs = {}
 
-        # input and output theano tensor types
-        # subclasses should define them
-        self.X = None
-        self.Y = None
-
         # train and test theano functions
         self.train = None
         self.test = None
@@ -54,10 +49,11 @@ class BaseNet(object):
         :return:
         """
         if self.test is None:
-            self.setup_test_function()
+            raise EnvironmentError("Call setup() first!")
+
         return self.test(x)
 
-    def setup_train_function(self, loss, updates):
+    def setup(self, X, Y, loss, updates):
         # TODO instantiate updates here?
         """
         Sets up the theano function in charge of the training
@@ -66,17 +62,16 @@ class BaseNet(object):
         :return:
         """
         self.train = theano.function(name="train_{0}".format(self.name),
-                                     inputs=[self.X, self.Y],
+                                     inputs=[X, Y],
                                      outputs=loss,
-                                     updates=updates)
+                                     updates=updates,
+                                     allow_input_downcast=True)
 
-    def setup_test_function(self):
-        """
-        Sets up the theano function in charge of the testing
-        """
         self.test = theano.function(name="predict_{0}".format(self.name),
-                                    inputs=[self.X],
-                                    outputs=self.transform(self.X, mode="test"))
+                                    inputs=[X],
+                                    outputs=self.transform(X, mode="test"),
+                                    allow_input_downcast=True)
+
 
     def transform(self, x, **kwargs):
         """

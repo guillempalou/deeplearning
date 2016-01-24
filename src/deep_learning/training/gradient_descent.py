@@ -3,13 +3,22 @@ import numpy as np
 import theano
 import theano.tensor as T
 
-from deep_learning.training.updates.base_update import BaseUpdate
+from deep_learning.theano_utils import get_symbolic_variable
+from deep_learning.training.updates.vanilla_update import VanillaUpdate
 
 
 class StochasticGradientDescent(object):
+    """
+    Class controling the fitting of a neural net
+    using gradient descent
+    """
     logger = logging.getLogger("StochasticGradientDescent")
 
-    def __init__(self, loss, learning_parameters, updates, callback=None):
+    def __init__(self,
+                 loss,
+                 learning_parameters,
+                 updates=VanillaUpdate,
+                 callback=None):
 
         # initialize parameters for learning
         self.best_loss = 1e100
@@ -17,7 +26,7 @@ class StochasticGradientDescent(object):
         # variables for learning
         self.loss = loss
         self.learning_parameters = learning_parameters
-        self.updates = updates
+        self.updates = updates(**learning_parameters)
 
         self.callback = callback
         self.iteration = 0
@@ -29,8 +38,12 @@ class StochasticGradientDescent(object):
 
     def fit(self, model, X, Y):
 
+        # get input and output theano variables based on X and Y
+        tX = get_symbolic_variable(X, "X")
+        tY = get_symbolic_variable(Y, "Y")
+
         if self.iteration == 0:
-            self.setup(model)
+            self.setup(model, tX, tY)
 
         for self.iteration in range(self.learning_parameters["max_iter"]):
 
@@ -45,23 +58,20 @@ class StochasticGradientDescent(object):
             if self.callback is not None:
                 self.callback(self)
 
-    def setup(self, model):
+    def setup(self, model, X, Y):
 
         self.logger.info("Beginning training for model {0}".format(model.name))
         self.logger.debug("Learning parameters {0}".format(self.learning_parameters))
 
-        # get input and output type variables
-        X, Y = (model.X, model.Y)
-
         # initialize the train function
         # TODO add possible regularization on parameters
-        loss_function = self.loss(model.transform(X, method="train"), Y)
+        loss_function = self.loss(model.transform(X, mode="train"), Y)
 
         # get the update equations for the model parameters
         # using the train function
         updates = self.updates.update_parameters(model=model, loss=loss_function)
 
-        model.setup_train_function(loss_function, updates)
+        model.setup(X, Y, loss_function, updates)
 
     def do_epoch(self, model, X, Y):
         """

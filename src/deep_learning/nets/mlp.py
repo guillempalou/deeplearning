@@ -42,12 +42,6 @@ class MLP(FeedForwardNet):
                                     initializer={"w": initializer_w, "b": initializer_b},
                                     **kwargs)
 
-        # create variables for input/output
-        self.X = T.dmatrix("input")
-
-        # desired output
-        self.Y = T.ivector("output")
-
         # create a graph for the net
         g = nx.DiGraph()
         g.add_node(hidden_layer)

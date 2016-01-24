@@ -8,7 +8,7 @@ import theano.tensor as T
 from data_generation.gaussian_mixtures import generate_random_clouds
 from deep_learning.nets.logistic import LogisticNet
 from deep_learning.training.gradient_descent import StochasticGradientDescent
-from deep_learning.training.updates.sgd_update import SGDUpdate
+from deep_learning.training.losses import cross_entropy
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
@@ -23,12 +23,9 @@ learning_parameters = {
 
 n_classes = 3
 logistic = LogisticNet("logistic", 2, n_classes, activation=T.tanh)
-loss = lambda x, y: -T.mean(T.log2(x[T.arange(0, y.shape[0]), y]))
 
-update = SGDUpdate(loss=loss, model=logistic, **learning_parameters)
-sgd = StochasticGradientDescent(loss=loss,
-                                learning_parameters=learning_parameters,
-                                updates=update)
+sgd = StochasticGradientDescent(loss=cross_entropy,
+                                learning_parameters=learning_parameters)
 
 np.random.seed(0)
 X, Y = generate_random_clouds(1000, n_classes, 2, 1)
@@ -44,7 +41,7 @@ ymax = np.max(X[:, 1]) + 0.5
 
 h = 0.02
 xx, yy = np.meshgrid(np.arange(xmin, xmax, h),
-                     np.arange(ymin, ymax, h))
+                     np.arange(ymin, ymax, h), )
 
 predict = logistic.predict(np.column_stack((xx.ravel(), yy.ravel())))
 Z = np.argmax(predict, axis=1)

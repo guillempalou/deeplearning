@@ -7,7 +7,9 @@ import theano.tensor as T
 from data_generation.gaussian_mixtures import generate_random_clouds
 from deep_learning.nets.mlp import MLP
 from deep_learning.training.gradient_descent import StochasticGradientDescent
-from deep_learning.training.updates.sgd_update import SGDUpdate
+from deep_learning.training.losses import cross_entropy
+from deep_learning.training.updates.vanilla_update import VanillaUpdate
+from deep_learning.units.activation.tanh_activation import TanhActivation
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
@@ -18,13 +20,10 @@ learning_parameters = {
 }
 
 n_classes = 3
-mlp = MLP("mlp", 2, 10, n_classes, activation=T.tanh)
-loss = lambda x, y: -T.mean(T.log2(x[T.arange(0, y.shape[0]), y]))
+mlp = MLP("mlp", 2, 10, n_classes, activation=TanhActivation())
 
-update = SGDUpdate(loss=loss, model=mlp, **learning_parameters)
-sgd = StochasticGradientDescent(loss=loss,
-                                learning_parameters=learning_parameters,
-                                updates=update)
+sgd = StochasticGradientDescent(loss=cross_entropy,
+                                learning_parameters=learning_parameters)
 
 np.random.seed(12)
 X, Y = generate_random_clouds(1000, n_classes, 2, 2)

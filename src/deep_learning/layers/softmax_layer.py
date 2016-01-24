@@ -16,5 +16,13 @@ class SoftMaxLayer(LinearUnitLayer):
         self.logger.debug("Creating softmax {0}".format(self.name))
         self.logger.debug("Layer with {0} inputs and {1} outputs".format(self.in_shape, self.out_shape))
 
-        # set the activation function for this layer as the softmax
-        self.activation = T.nnet.softmax
+    def transform(self, x, **kwargs):
+        # call linear layer ignoring kwargs
+        """
+        Transform input variable
+        :param x: input matrix
+        :param kwargs: ignored
+        :return: transformed input
+        """
+        return T.nnet.softmax(super(SoftMaxLayer, self).transform(x))
+

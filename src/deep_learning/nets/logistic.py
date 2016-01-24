@@ -24,10 +24,6 @@ class LogisticNet(FeedForwardNet):
                                     out_shape=out_shape,
                                     initializer={"w": initializer_w, "b": initializer_b})
 
-        # create variables based for input/output
-        self.X = T.dmatrix("input")
-        self.Y = T.ivector("output")
-
         # create a graph for the net
         g = nx.DiGraph()
         g.add_node(output_layer)
